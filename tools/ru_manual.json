@@ -25,7 +25,7 @@
   "For those not brave enough for idira (Shimmering Emulsion Candidate) - Thessara items can turn this into a daemon summoner build (cant use bedlam or edge of the irrevocable like RT)": "Для тех, кому Идира не по нервам (кандидат на мерцающую эмульсию). С предметами Тессары превращается в билд призывателя демонов (но «Бедлам» и «Край необратимого» доступны только Вольному Торговцу)",
   "For those that don’t like to move and attack. The wobbuffet build. Act 2 combining epiphany and pneumo boots is very potent": "Для тех, кто не любит бегать и бить. Билд-«вобаффет». Во втором акте связка прозрения и пневмоботинок очень мощная",
   "For those that really just want to stack raw damage onto force swords whilst playing arch-militant & not worry about how psy powers work": "Для тех, кто просто хочет наваливать голый урон силовыми мечами в роли архмилитанта и не разбираться, как работают псионические силы",
-  "For when you really dont want GS Cassia or Eogunn in the party": "На случай, если великий стратег Кассия или Эогунн в отряде не нужны",
+  "For when you really dont want GS Cassia or Eogunn in the party": "На случай, если великий стратег Кассия или Эоганн в отряде не нужны",
   "Forge World (Locomotion System Systems) - Crimelord - Warrior - Weapon Skill +2 / Agility +2 / Toughness +1 / Perception +1": "Мир-кузница (двигательные системы) — криминальный лорд — воин — Ближний Бой +2 / Ловкость +2 / Выносливость +1 / Восприятие +1",
   "Forge World (Locomotion System) - Crime Lord - Bladedancer - Weapon Skill +2 / Toughness +1 / Agility +2 / Perception +1": "Мир-кузница (двигательные системы) — криминальный лорд — танцор смерти — Ближний Бой +2 / Выносливость +1 / Ловкость +2 / Восприятие +1",
   "Forge World (Locomotion Systems) - Ministorum Priest - Bladedancer - Weapon Skill +2 - Agility +2 - Perception +2": "Мир-кузница (двигательные системы) — священник Министорума — танцор смерти — Ближний Бой +2 — Ловкость +2 — Восприятие +2",
@@ -235,7 +235,7 @@
   },
   "eogunn": {
    "pick": "eogunn-ferbus-master-of-motive-force",
-   "text": "Эогунн (Lex Imperialis) — про движущую силу: он раздаёт отряду перемещение и заряды, а не бьёт сам. «Повелитель движущей силы» (мастер-тактик) — самый полезный отряду. «Великий манипул» (великий стратег) — если Кассии нет. «Манипул движущей силы» (надзиратель) добавляет питомца."
+   "text": "Эоганн (The Infinite Museion) — про движущую силу: он раздаёт отряду перемещение и заряды, а не бьёт сам. «Повелитель движущей силы» (мастер-тактик) — самый полезный отряду. «Великий манипул» (великий стратег) — если Кассии нет. «Манипул движущей силы» (надзиратель) добавляет питомца."
   },
   "heinrix": {
    "pick": "heinrix-force-sword-pistol",
@@ -419,9 +419,9 @@
   "Default player 1 (Sanctic Officer) - Sanctioned Psyker (Sanctic) Imperial World (Fellowship) - +2 Ballistic Skill / +2 Agility / +2 Fellowship": "Базовый вариант ГГ (офицер-экзорцист) — санкционированный псайкер (экзорцизм), имперский мир (Общительность) — Дальний Бой +2 / Ловкость +2 / Общительность +2",
   "Dishonourable Discharge - Xeno Heresy": "Позорное увольнение — ксеноересь",
   "Dracon Marazhai - Kabalite Assassin": "Дракон Маражай — кабалит-ассасин",
-  "Eogunn Ferbus - Grand Manipulus": "Эогунн Фербус — великий манипул",
-  "Eogunn Ferbus - Manipulus of the motive force": "Эогунн Фербус — манипул движущей силы",
-  "Eogunn Ferbus - Master of Motive Force": "Эогунн Фербус — повелитель движущей силы",
+  "Eogunn Ferbus - Grand Manipulus": "Эоганн Фебрус — великий манипул",
+  "Eogunn Ferbus - Manipulus of the motive force": "Эоганн Фебрус — манипул движущей силы",
+  "Eogunn Ferbus - Master of Motive Force": "Эоганн Фебрус — повелитель движущей силы",
   "Fire Tsunami": "Огненное цунами",
   "Forgeflayer Overlord": "Повелитель кузни-живодерни",
   "Grand Astra Militarum Stratagist": "Великий стратег Астра Милитарум",
@@ -534,5 +534,16 @@
   "Yrliet the Avenger": "Ирлиэт-мститель",
   "Yrliet the Gunslinger Executioner": "Ирлиэт — палач-стрелок",
   "Yrliet the Outcast": "Ирлиэт-изгой"
+ },
+ "skills": {
+  "All Fellowship / Интеллект": "все навыки на Общительность / Интеллект",
+  "All Fellowship / All Intelligence (can also swap Lore Xenos / Tech-Use for Persuasion)": "все навыки на Общительность / все навыки на Интеллект (можно поменять «Знания: ксеносы» / «Техника» на «Убеждение»)",
+  "Напор / Взрывотехника / Наблюдательность / Lore Imperium (Chartist Pendant)": "Напор / Взрывотехника / Наблюдательность / «Знания: Империум» (ради подвески хартистов)",
+  "Коммерция / Напор / Убеждение / Lore Imperium (Chartist Pendant)": "Коммерция / Напор / Убеждение / «Знания: Империум» (ради подвески хартистов)",
+  "Коммерция / Убеждение / Напор / Lore Imperium (Chartist Pendant)": "Коммерция / Убеждение / Напор / «Знания: Империум» (ради подвески хартистов)",
+  "Intelligence Skills": "навыки на Интеллект",
+  "Взрывотехника, Наблюдательность, Lore Skills, Медицина": "Взрывотехника, Наблюдательность, любые «Знания», Медицина",
+  "Атлетика / Demolition - lower difficulties / Знания: Варп / Устойчивость": "Атлетика / Взрывотехника (на низких сложностях) / Знания: Варп / Устойчивость",
+  "Медицина / Наблюдательность / Знания: Варп / Lore Imperium (fellowship item)": "Медицина / Наблюдательность / Знания: Варп / «Знания: Империум» (ради предмета на Общительность)"
  }
 }

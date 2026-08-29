@@ -26,6 +26,9 @@ the update is applied on the next launch.
 ## Using it
 
 - **Home** — 12 companions, the Rogue Trader, and the "secret" characters.
+  Characters you are already levelling show the chosen build and **what to take
+  next** right in the row ("Дальше — ур. 12: …"); tapping jumps straight to that
+  level.
   The gear icon holds the DLC switches: a disabled DLC hides the builds that
   cannot be assembled without it.
 - **Character** → a **"Как выбрать"** ("how to choose") card at the top explains
@@ -38,7 +41,13 @@ the update is applied on the next launch.
   - **Уровень** (Level) — a 1–55 slider and the answer: "at level 28 take …".
   - **План 1–55** (Plan) — the whole progression at once, split by tier.
   - **Снаряжение** (Gear) — what to wear, slot by slot.
+- On the **Уровень** tab, the **«Взял — дальше»** button marks the level as taken
+  and skips to the next choice. Progress lives in localStorage, per character,
+  and can be reset from the same screen.
 - Tapping a talent or ability opens its description — Russian first, English original below.
+- Builds affected by patches released after the guide was written are tagged
+  **«правка патчем 1.6.1»** and carry a "what changed" card; the full list is in
+  the settings sheet under «Актуальность».
 
 ## The game's progression model
 
@@ -113,6 +122,7 @@ python3 tools/apply_ru_manual.py                     # what the game has no text
 | `data.json` | 150 builds across 17 characters + 793 talent/ability descriptions |
 | `sw.js` | service worker: offline support, network-first for `index.html` and `data.json` |
 | `manifest.webmanifest`, `icon*.png/svg` | PWA plumbing |
+| `tools/patch_notes.py` | the currency layer: what changed in the game after the guide was compiled |
 | `tools/ru_manual.json` | the hand-written layer: build titles and blurbs, slots, rare items, the "how to choose" advice |
 | `tools/` | the scripts that generated `data.json` |
 
@@ -136,12 +146,34 @@ cd ..
 python3 tools/apply_ru.py enGB.json ruRU.json        # Russian names from the game
 python3 tools/apply_ru_desc.py enGB.json ruRU.json   # Russian descriptions and items from the game
 python3 tools/apply_ru_manual.py                     # hand-written layer: builds, slots, advice
+python3 tools/patch_notes.py                         # post-guide patch notices
 ```
 
 Order matters: each script fills in what the previous one could not find.
 
 `build_data.py` expects the spreadsheet tab exports next to it
 (`s_<gid>.csv`, downloaded via `gviz/tq?tqx=out:csv&gid=<gid>`).
+
+## How current is this?
+
+| what | version |
+|---|---|
+| build data | Revan619's spreadsheet, "Build cover up to patch 1.6" |
+| game it was checked against | 1.6.1.514 (hotfix of 20 July 2026) |
+| last check | 29 August 2026 |
+
+As of 29 August 2026 all 19 sheets are byte-identical to the ones `data.json`
+was built from — the guide's author has not changed anything since.
+
+The only balance patch after the guide was compiled is **1.6.1.493** of
+30 June 2026 (everything later is bug fixes). What it changed is recorded in the
+app: Eogunn's Galvanic Field combos nerfed, Wounded Beast and Facing the End
+capped, Pasqal's Axial Fortification now only boosts Shock damage, Ogryn Grip
+buffed. The psyker-staff melee bug is still unfixed, so the guide's builds that
+rely on it still work. 11 builds are tagged in the list.
+
+To re-check: `tools/patch_notes.py` holds the dates, versions and notice texts;
+run it last in the pipeline after editing.
 
 ## Deploying
 

@@ -41,7 +41,7 @@ CHARS = [
  ('marazhai','Marazhai Aezyrraesh','Маражай Аэзирраэш','base',['marazhai']),
  ('kibellah','Kibellah','Кибелла','void_shadows',['kibellah']),
  ('solomorne','Solomorne Anthar','Соломорн Антар','lex_imperialis',['solomorne']),
- ('eogunn','Eogunn Ferbus','Эогунн Фербус','lex_imperialis',['eogunn']),
+ ('eogunn','Eogunn Februs','Эоганн Фебрус','infinite_museion',['eogunn']),
  ('incendia','Incendia Chorda','Инцендия Чорда','base',['incendia']),
  ('winterscale','Calligos Winterscale','Каллигос Винтерскейл','base',['winterscale','calligos']),
  ('uralon','Uralon the Cruel','Уралон Жестокий','base',['uralon']),

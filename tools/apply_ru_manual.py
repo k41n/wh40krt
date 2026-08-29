@@ -20,7 +20,7 @@ def split_items(line):
 def main():
     man = json.load(open(os.path.join(HERE, 'ru_manual.json'), encoding='utf-8'))
     d = json.load(open('data.json', encoding='utf-8'))
-    stat = dict.fromkeys(('titles', 'descs', 'glossary', 'slots', 'items', 'notes'), 0)
+    stat = dict.fromkeys(('titles', 'descs', 'glossary', 'slots', 'items', 'notes', 'skills'), 0)
     missed = {k: set() for k in stat}
 
     for name, v in d['glossary'].items():
@@ -82,6 +82,11 @@ def main():
                 gear.append([slot, new if isinstance(items, list) else new[0]])
             if gear:
                 b['gear'] = gear
+
+            sk = [man.get('skills', {}).get(x, x) for x in b.get('skills', [])]
+            if sk != b.get('skills', []):
+                b['skills'] = sk
+                stat['skills'] += len(sk)
 
             for rows in b['levels'].values():
                 for row in rows:

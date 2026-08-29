@@ -61,6 +61,7 @@ main{padding:14px 12px 40px;max-width:720px;margin:0 auto}
   border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--dim);background:#100e0b}
 .chip.on{color:var(--gold);border-color:var(--gold-dim)}
 .chip.dlc{color:var(--blood);border-color:#4a231e}
+.chip.warnchip{color:#c8a24a;border-color:#4a3a1e}
 .chip.rec{color:var(--gold);border-color:var(--gold-dim);background:#191509}
 .en{color:var(--faint);font-size:12px}
 .row{display:flex;align-items:center;gap:10px}
@@ -75,6 +76,14 @@ main{padding:14px 12px 40px;max-width:720px;margin:0 auto}
 .item .nm{font-family:Georgia,serif;font-size:16px}
 .item .sub{font-size:12.5px;color:var(--dim);margin-top:2px}
 .item .sub.en{font-size:12px;color:var(--faint);margin-top:1px}
+.item .next{font-size:12.5px;color:var(--gold);margin-top:3px}
+.btn{border:1px solid var(--line);border-radius:10px;padding:9px 14px;font-size:14px;
+  background:var(--panel2);color:var(--ink)}
+.btn:active{opacity:.7}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:#14110a;font-weight:600}
+.warn{border-color:#4a3a1e;background:#191408}
+.warn b{color:var(--gold)}
+.item .avatar.on{border-color:var(--gold-dim);color:var(--gold)}
 .item .go{color:var(--gold-dim);font-size:18px;flex:none}
 .avatar{width:38px;height:38px;flex:none;border-radius:9px;display:grid;place-items:center;
   font-family:Georgia,serif;font-size:17px;color:var(--gold);
@@ -187,7 +196,8 @@ const esc = s => String(s ?? "").replace(/[&<>"]/g, m => ({"&":"&amp;","<":"&lt;
 const LS = {
   get(k, d) { try { const v = localStorage.getItem("rt." + k); return v === null ? d : JSON.parse(v); }
               catch { return d; } },
-  set(k, v) { try { localStorage.setItem("rt." + k, JSON.stringify(v)); } catch {} }
+  set(k, v) { try { localStorage.setItem("rt." + k, JSON.stringify(v)); } catch {} },
+  del(k)    { try { localStorage.removeItem("rt." + k); } catch {} }
 };
 
 // чем занимается билд — по архетипу II ступени
@@ -204,7 +214,8 @@ const ROLE = {
 
 const DLC = [
   { id: "void_shadows",   ru: "Void Shadows",   note: "Танцор смерти, Палач, Кибелла" },
-  { id: "lex_imperialis", ru: "Lex Imperialis", note: "Надзиратель, Арбитр, Соломорн, Эогунн" }
+  { id: "lex_imperialis", ru: "Lex Imperialis", note: "Надзиратель, Арбитр, Соломорн" },
+  { id: "infinite_museion", ru: "The Infinite Museion", note: "Эоганн Фебрус, аугментации" }
 ];
 const KIND = {
   key:     ["Ключевая способность", "Keystone"],
@@ -227,10 +238,37 @@ const archName = (b, i) => {
 let D = null;
 
 /* ---------- state ---------- */
-const dlcOn   = () => LS.get("dlc", { void_shadows: true, lex_imperialis: true });
+// новые DLC по умолчанию включены, даже если настройки сохранены раньше
+const DLC_DEF = { void_shadows: true, lex_imperialis: true, infinite_museion: true };
+const dlcOn   = () => Object.assign({}, DLC_DEF, LS.get("dlc", {}));
 const setDlc  = v => LS.set("dlc", v);
 const lvlOf   = (c, b) => LS.get(`lv.${c}.${b}`, 1);
 const setLvl  = (c, b, v) => LS.set(`lv.${c}.${b}`, v);
+// выбранный билд персонажа и уровни, которые уже отмечены как взятые
+const selOf   = c => LS.get(`sel.${c}`, null);
+const setSel  = (c, b) => LS.set(`sel.${c}`, b);
+const doneOf  = (c, b) => LS.get(`done.${c}.${b}`, 0);
+const setDone = (c, b, v) => LS.set(`done.${c}.${b}`, v);
+const clearProgress = c => { LS.del(`sel.${c}`); };
+
+// ближайший уровень начиная с from, на котором есть что выбирать
+function nextLevel(b, from) {
+  for (let l = Math.max(1, from); l <= 55; l++) if ((b.levels[l] || []).length) return l;
+  return null;
+}
+// что персонаж уже выбрал и что у него следующее
+function progressOf(c) {
+  const bid = selOf(c.id);
+  if (!bid) return null;
+  const b = c.builds.find(x => x.id === bid && buildAllowed(c, x));
+  if (!b) return null;
+  const done = doneOf(c.id, b.id);
+  return { b, done, next: nextLevel(b, done + 1) };
+}
+// короткая сводка выбора на уровне: «Толстокожесть, Ближний Бой +5»
+function pickSummary(b, lv) {
+  return (b.levels[lv] || []).map(o => o[0].ru || o[0].n).join(", ");
+}
 
 function buildAllowed(ch, b) {
   const on = dlcOn();
@@ -302,11 +340,23 @@ function viewHome() {
 function charRow(c) {
   const n = el("button", "item");
   const nb = c.builds.filter(b => buildAllowed(c, b)).length;
-  n.innerHTML = `<div class="avatar">${esc(c.ru[0])}</div>
-    <div class="grow"><div class="nm">${esc(c.ru)}</div>
-    <div class="sub">${esc(c.en)} · ${nb} ${plural(nb, "билд", "билда", "билдов")}</div></div>
+  const p = progressOf(c);
+  let body = `<div class="sub">${esc(c.en)} · ${nb} ${plural(nb, "билд", "билда", "билдов")}</div>`;
+  if (p) {
+    const what = p.next ? pickSummary(p.b, p.next) : "";
+    body = `<div class="sub">${esc(p.b.titleRu || p.b.title)}</div>
+      <div class="next">${p.next
+        ? `Дальше — <b>ур. ${p.next}</b>: ${esc(trunc(what, 60))}`
+        : "Билд собран до 55-го уровня"}</div>`;
+  }
+  n.innerHTML = `<div class="avatar${p ? " on" : ""}">${esc(c.ru[0])}</div>
+    <div class="grow"><div class="nm">${esc(c.ru)}</div>${body}</div>
     <div class="go">›</div>`;
-  n.onclick = () => location.hash = "#/c/" + c.id;
+  n.onclick = () => {
+    if (p && p.next) { setLvl(c.id, p.b.id, p.next); LS.set("tab", "now"); location.hash = "#/b/" + c.id + "/" + p.b.id; }
+    else if (p) location.hash = "#/b/" + c.id + "/" + p.b.id;
+    else location.hash = "#/c/" + c.id;
+  };
   return n;
 }
 const plural = (n, a, b, c) => {
@@ -323,6 +373,27 @@ function viewChar(cid) {
   setHead(c.ru, c.en, "#/");
   const m = $("#app"); m.innerHTML = "";
   const bs = c.builds.filter(b => buildAllowed(c, b));
+  const prog = progressOf(c);
+  if (prog) {
+    m.append(el("div", "sect", prog.done ? "Ты уже качаешь" : "Последний открытый билд"));
+    const n = el("div", "card");
+    n.style.borderColor = "var(--gold-dim)";
+    const what = prog.next ? pickSummary(prog.b, prog.next) : "";
+    n.innerHTML = `<div class="disp" style="color:var(--gold);font-size:18px">${esc(prog.b.titleRu || prog.b.title)}</div>
+      <div class="small" style="margin-top:6px">${prog.next
+        ? `${prog.done ? `Отмечено до ${prog.done}-го уровня. ` : ""}Следующий выбор — <b>уровень ${prog.next}</b>: ${esc(what)}`
+        : "Все выборы до 55-го уровня отмечены."}</div>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn gold" id="go-on">${prog.next ? "Продолжить" : "Открыть билд"}</button>
+        <button class="btn" id="go-reset">Выбрать другой билд</button>
+      </div>`;
+    m.append(n);
+    n.querySelector("#go-on").onclick = () => {
+      if (prog.next) { setLvl(c.id, prog.b.id, prog.next); LS.set("tab", "now"); }
+      location.hash = "#/b/" + c.id + "/" + prog.b.id;
+    };
+    n.querySelector("#go-reset").onclick = () => { clearProgress(c.id); viewChar(cid); };
+  }
   if (c.how) {
     m.append(el("div", "sect", "Как выбрать"));
     m.append(el("div", "card small", esc(c.how)));
@@ -344,8 +415,10 @@ function viewChar(cid) {
         <div class="sub">${b.tiersRu.map(esc).join(" → ")}</div>
         ${about ? `<div class="sub" style="margin-top:5px">${esc(trunc(about, 130))}</div>` : ""}
         <div style="margin-top:6px">
-          ${b.id === c.pick ? `<span class="chip rec">советую начать с него</span> ` : ""}
+          ${prog && prog.b.id === b.id && prog.done ? `<span class="chip rec">твой билд</span> ` : ""}
+          ${b.id === c.pick && !(prog && prog.b.id === b.id) ? `<span class="chip rec">советую начать с него</span> ` : ""}
           ${role ? `<span class="chip">${esc(role)}</span> ` : ""}
+          ${b.warn ? `<span class="chip warnchip">правка патчем 1.6.1</span> ` : ""}
           ${(b.dlc || []).map(d => `<span class="chip dlc">${esc(dlcName(d))}</span>`).join(" ")}
         </div>
         </div><div class="go">›</div>`;
@@ -362,6 +435,7 @@ function viewBuild(cid, bid) {
   const c = D.characters.find(x => x.id === cid);
   const b = c && c.builds.find(x => x.id === bid);
   if (!b) return location.hash = "#/";
+  setSel(c.id, b.id);
   setHead(c.ru, b.titleRu || b.title, "#/c/" + c.id);
   const m = $("#app"); m.innerHTML = "";
 
@@ -414,8 +488,28 @@ function paneNow(root, c, b) {
     if (!rows.length) {
       out.append(el("div", "card muted", "На этом уровне выбирать нечего — просто повышение."));
     } else {
-      out.append(el("div", "sect", `Уровень ${lv} — бери:`));
+      const done = doneOf(c.id, b.id);
+      out.append(el("div", "sect", `Уровень ${lv} — бери:`
+        + (lv <= done ? " (уже отмечен)" : "")));
       rows.forEach(opts => out.append(pickCard(opts)));
+      const nx = nextLevel(b, lv + 1);
+      const go = el("button", "btn gold", lv <= done
+        ? (nx ? `Дальше — уровень ${nx}` : "Всё выбрано")
+        : (nx ? `Взял — дальше, уровень ${nx}` : "Взял — это последний выбор"));
+      go.style.cssText = "width:100%;margin-top:12px";
+      go.onclick = () => {
+        if (lv > done) setDone(c.id, b.id, lv);
+        if (nx) lv = nx;
+        window.scrollTo(0, 0);
+        draw();
+      };
+      out.append(go);
+      if (done) {
+        const u = el("button", "btn", `Сбросить отметки (сейчас отмечено до ${done}-го)`);
+        u.style.cssText = "width:100%;margin-top:8px";
+        u.onclick = () => { setDone(c.id, b.id, 0); draw(); };
+        out.append(u);
+      }
     }
 
     // tier transition hint
@@ -432,6 +526,11 @@ function paneNow(root, c, b) {
     if (b.skills && b.skills.length) {
       out.append(el("div", "sect", "Куда сыпать очки навыков"));
       out.append(el("div", "card", b.skills.map(esc).join("<br>")));
+    }
+    if (b.warn && b.warn.length) {
+      const w = el("div", "card small warn");
+      w.innerHTML = `<b>Что изменилось после гайда</b><br>${b.warn.map(esc).join("<br>")}`;
+      out.append(w);
     }
     if (b.desc) {
       out.append(el("div", "sect", "Замысел билда"));
@@ -477,6 +576,7 @@ function sheetFor(opts) {
 
 function panePlan(root, c, b) {
   const cur = lvlOf(c.id, b.id);
+  const done = doneOf(c.id, b.id);
   const wrap = el("div", "plan");
   TIERS.forEach(([lo, hi, label, ti]) => {
     const h = el("div", "tierhead");
@@ -485,7 +585,7 @@ function panePlan(root, c, b) {
     wrap.append(h);
     for (let l = lo; l <= hi; l++) {
       const rows = b.levels[l] || [];
-      const n = el("div", "lv" + (l === cur ? " cur" : l < cur ? " past" : ""));
+      const n = el("div", "lv" + (l === cur ? " cur" : l <= done ? " past" : ""));
       n.innerHTML = `<div class="num">${l}</div><div class="body">${
         rows.length
           ? rows.map(o => `<div>${nameHtml(o[0])}${o.length > 1 ? ` <i>/ ${o.slice(1).map(x => esc(x.ru || x.n)).join(" / ")}</i>` : ""}</div>`).join("")
@@ -518,7 +618,19 @@ function cfgSheet() {
     <p class="small muted">Отключённые дополнения убирают своих компаньонов, архетипы и билды из списков.</p>
     <div id="dlclist"></div>
     <div class="rule"></div>
-    <div class="small muted">Данные билдов: гайд Revan619 (патч 1.6). Приложение работает офлайн.</div>`);
+    <div class="rule"></div>
+    <h3 style="font-size:17px">Актуальность</h3>
+    <div id="patchbox"></div>`);
+  const pb = $("#patchbox"), pt = D.meta.patch;
+  if (pt) {
+    pb.innerHTML = `<p class="small muted">Билды взяты из таблицы Revan619 (собрана под патч
+      <b>${esc(pt.guide)}</b>). Игра проверена на версии <b>${esc(pt.game)}</b>,
+      сверка от ${esc(pt.checked)}. Что поменялось с тех пор:</p>
+      <ul class="small" style="padding-left:18px;margin:8px 0">${
+        pt.notes.map(n => `<li style="margin-bottom:6px">${esc(n)}</li>`).join("")}</ul>
+      <p class="small muted">Билды, которых это касается, помечены прямо в списке.
+      Приложение работает офлайн.</p>`;
+  }
   const list = $("#dlclist");
   DLC.forEach(d => {
     const r = el("div", "toggle");
