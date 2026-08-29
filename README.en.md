@@ -33,7 +33,8 @@ the update is applied on the next launch.
   cannot be assembled without it.
 - **Character** → a **"Как выбрать"** ("how to choose") card at the top explains
   how the builds differ and which one to start with. Below it the builds are
-  grouped by their Tier II archetype; each carries a role chip ("universal
+  grouped by their Tier II archetype; each shows a one-line **"how it plays"**
+  summary and the guide author's full note, untruncated; each carries a role chip ("universal
   damage", "tank", "extra turns for the party"…) and the recommended one is
   marked "советую начать с него" ("start with this one").
   Abelard has 8 builds, Heinrix 12, the Rogue Trader 64.
@@ -44,6 +45,9 @@ the update is applied on the next launch.
 - On the **Уровень** tab, the **«Взял — дальше»** button marks the level as taken
   and skips to the next choice. Progress lives in localStorage, per character,
   and can be reset from the same screen.
+- Inside a build, a **«Как играется»** ("how it plays") card expands that into
+  4–5 sentences: what you do for the first 15 levels, what changes at 16, what
+  weapon is in your hands, which ability is the button you press every fight.
 - Tapping a talent or ability opens its description — Russian first, English original below.
 - Builds affected by patches released after the guide was written are tagged
   **«правка патчем 1.6.1»** and carry a "what changed" card; the full list is in
@@ -122,6 +126,7 @@ python3 tools/apply_ru_manual.py                     # what the game has no text
 | `data.json` | 150 builds across 17 characters + 793 talent/ability descriptions |
 | `sw.js` | service worker: offline support, network-first for `index.html` and `data.json` |
 | `manifest.webmanifest`, `icon*.png/svg` | PWA plumbing |
+| `tools/feel.py` | "how it plays": build feel derived from its archetypes, weapons and abilities |
 | `tools/patch_notes.py` | the currency layer: what changed in the game after the guide was compiled |
 | `tools/ru_manual.json` | the hand-written layer: build titles and blurbs, slots, rare items, the "how to choose" advice |
 | `tools/` | the scripts that generated `data.json` |
@@ -146,6 +151,7 @@ cd ..
 python3 tools/apply_ru.py enGB.json ruRU.json        # Russian names from the game
 python3 tools/apply_ru_desc.py enGB.json ruRU.json   # Russian descriptions and items from the game
 python3 tools/apply_ru_manual.py                     # hand-written layer: builds, slots, advice
+python3 tools/feel.py                                # "how it plays" text per build
 python3 tools/patch_notes.py                         # post-guide patch notices
 ```
 

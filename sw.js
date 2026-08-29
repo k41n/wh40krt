@@ -1,7 +1,7 @@
 // Меняй VERSION при каждом деплое — этого достаточно, чтобы установленное
 // приложение подхватило обновление: браузер видит изменившийся байт-в-байт sw.js,
 // ставит новую версию в ожидание, страница показывает кнопку «Обновить».
-const VERSION = "2026-08-29.5";
+const VERSION = "2026-08-29.6";
 const CACHE = "rt-kodeks-" + VERSION;
 const ASSETS = ["./", "./index.html", "./data.json", "./manifest.webmanifest",
                 "./icon.svg", "./icon-192.png", "./icon-512.png", "./icon-180.png"];
