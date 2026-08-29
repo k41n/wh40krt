@@ -62,19 +62,26 @@ WEAPON = [
 ]
 
 
+def weapon_sets(b):
+    """первое оружие каждого комплекта: у многих билдов их два и они разные"""
+    out = []
+    for slot, items in b.get('gear', []):
+        if 'ружи' not in slot.lower():
+            continue
+        first = items.split('/')[0].strip().rstrip('.,')
+        if first and first not in out:
+            out.append(first)
+    return out[:2]
+
+
 def main_weapon(b):
-    """первое оружие первого комплекта — по нему и судим о стиле боя"""
-    sets = [items for slot, items in b.get('gear', []) if 'ружи' in slot.lower()]
+    """по оружию и судим о стиле боя; второй комплект тоже называем"""
+    sets = weapon_sets(b)
     if not sets:
         return None, None
-    first = sets[0].split('/')[0].strip().rstrip('.,')
-    if not first:
-        return None, None
+    first = sets[0]
     low = first.lower()
     flavor = next((f for rx, f in WEAPON if re.search(rx, low)), None)
-    if flavor is None:                       # не опознали — смотрим весь комплект
-        low = sets[0].lower()
-        flavor = next((f for rx, f in WEAPON if re.search(rx, low)), None)
     return first, flavor
 
 
@@ -101,7 +108,7 @@ def picks(b):
 
 def rare(values, counts, total, limit=2):
     """черты, которые есть у этого билда и почти нет у соседних"""
-    cap = max(1, int(total * 0.4))
+    cap = max(1, int(total * 0.3))
     return [v for v in values if counts[v] <= cap][:limit]
 
 
@@ -110,9 +117,12 @@ def clauses(b, p, cnt, total):
     out = []
     weapon, flavor = main_weapon(b)
     if weapon:
-        uniq = cnt['weapon'][weapon] <= max(1, int(total * 0.4))
-        out.append(('weapon', uniq,
-                    f'{weapon}: {flavor}' if flavor else weapon))
+        uniq = cnt['weapon'][weapon] <= max(1, int(total * 0.3))
+        name = weapon
+        sets = weapon_sets(b)
+        if not uniq and len(sets) > 1:       # первое оружие как у соседей — назовём второе
+            name = ' и '.join(sets)
+        out.append(('weapon', uniq, f'{name}: {flavor}' if flavor else name))
     for u in rare(p['ult'], cnt['ult'], total, 1):
         out.append(('ult', True, f'ульта «{u}»'))
     for k in rare(p['key'], cnt['key'], total, 1):
@@ -123,7 +133,7 @@ def clauses(b, p, cnt, total):
         out.append(('talent', True, word + ' и '.join(f'«{t}»' for t in tal)))
     if p['stat']:
         st = cnt['stat']
-        uniq = any(st[s] <= max(1, int(total * 0.4)) for s in p['stat'])
+        uniq = any(st[s] <= max(1, int(total * 0.3)) for s in p['stat'])
         out.append(('stat', uniq, 'качаешь ' + ' и '.join(s.lower() for s in p['stat'])))
     return out
 
@@ -134,7 +144,12 @@ def cap(s):
 
 def short_line(b, cl, extra=0):
     """строка для списка: сначала то, чем билд отличается, потом суть архетипа"""
-    head = [c for _, u, c in cl if u][:2 + extra]
+    # оружие всегда впереди — это самое осязаемое, а дальше редкие черты
+    head = [c for t, _, c in cl if t == 'weapon']
+    uniq = [c for t, u, c in cl if u and t != 'weapon']
+    head += uniq[:2 + extra]
+    if extra and len(uniq) < 2 + extra:      # редкого не хватило — берём общее
+        head += [c for t, u, c in cl if not u and t != 'weapon'][:extra]
     if not head:
         head = [c for _, _, c in cl][:1 + extra]
     tail = SHORT.get(b['tiers'][1])
@@ -146,9 +161,9 @@ def short_line(b, cl, extra=0):
 
 def long_line(b, cl, many):
     parts = [T1.get(b['tiers'][0]), T2.get(b['tiers'][1])]
-    weapon, flavor = main_weapon(b)
-    if weapon:
-        parts.append(f'В руках — {weapon}' + (f': {flavor}.' if flavor else '.'))
+    w = next((c for t, _, c in cl if t == 'weapon'), None)
+    if w:
+        parts.append(f'В руках — {w}.')
     body = [c for t, u, c in cl if u and t in ('ult', 'key', 'talent', 'stat')]
     if many and body:
         parts.append('Чем отличается от соседних сборок: ' + ', '.join(body) + '.')
