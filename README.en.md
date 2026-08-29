@@ -6,9 +6,10 @@ An offline, phone-first PWA: pick a character, pick a build, set the level —
 the app tells you exactly what to take at that level. No respecs, no wiki
 tab-hopping in the middle of a fight.
 
-The interface and all in-game names are **in Russian** (official game
-localisation), with the English name kept next to each one so you can cross-check
-against the wiki.
+The interface is **entirely in Russian** — names, item names, build titles and
+talent descriptions all use the official game localisation — with the English
+original kept next to each one in small type so you can cross-check against the
+wiki.
 
 ## Install on a phone
 
@@ -27,13 +28,17 @@ the update is applied on the next launch.
 - **Home** — 12 companions, the Rogue Trader, and the "secret" characters.
   The gear icon holds the DLC switches: a disabled DLC hides the builds that
   cannot be assembled without it.
-- **Character** → the list of ready builds (Abelard has 8, Heinrix 12, the
-  Rogue Trader 64 across archetypes and weapon types).
+- **Character** → a **"Как выбрать"** ("how to choose") card at the top explains
+  how the builds differ and which one to start with. Below it the builds are
+  grouped by their Tier II archetype; each carries a role chip ("universal
+  damage", "tank", "extra turns for the party"…) and the recommended one is
+  marked "советую начать с него" ("start with this one").
+  Abelard has 8 builds, Heinrix 12, the Rogue Trader 64.
 - **Build** → three tabs:
   - **Уровень** (Level) — a 1–55 slider and the answer: "at level 28 take …".
   - **План 1–55** (Plan) — the whole progression at once, split by tier.
   - **Снаряжение** (Gear) — what to wear, slot by slot.
-- Tapping a talent or ability opens its description.
+- Tapping a talent or ability opens its description — Russian first, English original below.
 
 ## The game's progression model
 
@@ -64,12 +69,25 @@ patch 1.6):
 
 ## Russian names
 
-Archetype, talent, ability, characteristic and skill names come from the game's
-own localisation, matched by UUID (`enGB[uuid] → ruRU[uuid]`): 15,051 of 15,085
-picks, 99.8 %. Roughly thirty leftovers are typos and shorthand from the guide
-(`MSSP`, `Combat Locust`, free-text remarks) and are shown as-is. Talent
-descriptions stay English — they come from the guide's spreadsheet, not from the
-game strings.
+Everything visible in the app is Russian: archetypes, talents, abilities,
+characteristics, skills, items, gear slots, build titles and build blurbs.
+The English original stays next to it in small type.
+
+The source is the game itself, matched by UUID (`enGB[uuid] → ruRU[uuid]`).
+
+| layer | coverage | source |
+|---|---|---|
+| pick names | 15,051 / 15,085 (99.8 %) | game localisation |
+| talent descriptions | 701 / 793 from the game + 92 written by hand = **793** | game localisation + `tools/ru_manual.json` |
+| gear items | 3,028 / 3,216 from the game, the rest by hand | same |
+| build titles, blurbs, slots, remarks | 150 titles, 138 blurbs | by hand — this is the guide author's own prose, not game text |
+
+Roughly thirty leftovers are typos and shorthand from the guide (`MSSP`,
+`Combat Locust`, free-text remarks such as "Lore Imperium (Chartist Pendant)")
+and are shown as-is.
+
+Game markup is stripped from the descriptions (`{g|…}`, `{br}`), and computed
+numbers (`{uip|…}`) become "…" — the game fills those in from your stats.
 
 To rebuild the translation (e.g. after a game patch), copy from the game folder
 
@@ -82,7 +100,9 @@ To rebuild the translation (e.g. after a game patch), copy from the game folder
 and run:
 
 ```
-python3 tools/apply_ru.py enGB.json ruRU.json
+python3 tools/apply_ru.py enGB.json ruRU.json        # names
+python3 tools/apply_ru_desc.py enGB.json ruRU.json   # descriptions and items
+python3 tools/apply_ru_manual.py                     # what the game has no text for
 ```
 
 ## What's inside
@@ -93,6 +113,7 @@ python3 tools/apply_ru.py enGB.json ruRU.json
 | `data.json` | 150 builds across 17 characters + 793 talent/ability descriptions |
 | `sw.js` | service worker: offline support, network-first for `index.html` and `data.json` |
 | `manifest.webmanifest`, `icon*.png/svg` | PWA plumbing |
+| `tools/ru_manual.json` | the hand-written layer: build titles and blurbs, slots, rare items, the "how to choose" advice |
 | `tools/` | the scripts that generated `data.json` |
 
 ## Running locally
@@ -112,8 +133,12 @@ cd tools
 python3 build_data.py   # parsed spreadsheet CSVs → data.json
 python3 enrich.py       # classifies picks, attaches descriptions
 cd ..
-python3 tools/apply_ru.py enGB.json ruRU.json   # applies the Russian names
+python3 tools/apply_ru.py enGB.json ruRU.json        # Russian names from the game
+python3 tools/apply_ru_desc.py enGB.json ruRU.json   # Russian descriptions and items from the game
+python3 tools/apply_ru_manual.py                     # hand-written layer: builds, slots, advice
 ```
+
+Order matters: each script fills in what the previous one could not find.
 
 `build_data.py` expects the spreadsheet tab exports next to it
 (`s_<gid>.csv`, downloaded via `gviz/tq?tqx=out:csv&gid=<gid>`).

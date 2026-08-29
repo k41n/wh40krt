@@ -57,10 +57,12 @@ main{padding:14px 12px 40px;max-width:720px;margin:0 auto}
 .small{font-size:13px}
 .sect{margin:22px 0 10px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-dim)}
 .sect:first-child{margin-top:4px}
-.chip{display:inline-block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+.chip{display:inline-block;margin-bottom:4px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
   border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--dim);background:#100e0b}
 .chip.on{color:var(--gold);border-color:var(--gold-dim)}
 .chip.dlc{color:var(--blood);border-color:#4a231e}
+.chip.rec{color:var(--gold);border-color:var(--gold-dim);background:#191509}
+.en{color:var(--faint);font-size:12px}
 .row{display:flex;align-items:center;gap:10px}
 .grow{flex:1;min-width:0}
 .rule{height:1px;background:var(--line);margin:14px 0}
@@ -72,6 +74,7 @@ main{padding:14px 12px 40px;max-width:720px;margin:0 auto}
 .item:active{background:var(--panel2)}
 .item .nm{font-family:Georgia,serif;font-size:16px}
 .item .sub{font-size:12.5px;color:var(--dim);margin-top:2px}
+.item .sub.en{font-size:12px;color:var(--faint);margin-top:1px}
 .item .go{color:var(--gold-dim);font-size:18px;flex:none}
 .avatar{width:38px;height:38px;flex:none;border-radius:9px;display:grid;place-items:center;
   font-family:Georgia,serif;font-size:17px;color:var(--gold);
@@ -185,6 +188,18 @@ const LS = {
   get(k, d) { try { const v = localStorage.getItem("rt." + k); return v === null ? d : JSON.parse(v); }
               catch { return d; } },
   set(k, v) { try { localStorage.setItem("rt." + k, JSON.stringify(v)); } catch {} }
+};
+
+// чем занимается билд — по архетипу II ступени
+const ROLE = {
+  "Arch-Militant": "универсальный урон",
+  "Assassin": "точечный урон по одной цели",
+  "Vanguard": "танк, держит удар",
+  "Master Tactician": "лишние ходы отряду",
+  "Grand Strategist": "зоны и усиление всей команды",
+  "Bounty Hunter": "урон и добивание",
+  "Executioner": "кровотечения и яды",
+  "Overseer": "питомец и поддержка"
 };
 
 const DLC = [
@@ -308,6 +323,10 @@ function viewChar(cid) {
   setHead(c.ru, c.en, "#/");
   const m = $("#app"); m.innerHTML = "";
   const bs = c.builds.filter(b => buildAllowed(c, b));
+  if (c.how) {
+    m.append(el("div", "sect", "Как выбрать"));
+    m.append(el("div", "card small", esc(c.how)));
+  }
   m.append(el("div", "sect", "Выбери билд"));
   if (!bs.length) m.append(el("div", "empty", "Для выбранных DLC билдов нет."));
 
@@ -317,12 +336,18 @@ function viewChar(cid) {
     m.append(el("div", "sect", (D.archRu[t2] || t2) + " · " + t2));
     groups[t2].forEach(b => {
       const n = el("button", "item");
+      const role = ROLE[b.tiers[1]];
+      const about = b.descRu || b.desc || "";
       n.innerHTML = `<div class="grow">
-        <div class="nm">${esc(b.title)}</div>
+        <div class="nm">${esc(b.titleRu || b.title)}</div>
+        ${b.titleRu ? `<div class="sub en">${esc(b.title)}</div>` : ""}
         <div class="sub">${b.tiersRu.map(esc).join(" → ")}</div>
-        ${b.desc ? `<div class="sub" style="margin-top:5px">${esc(trunc(b.desc, 120))}</div>` : ""}
-        ${(b.dlc || []).length ? `<div style="margin-top:6px">${b.dlc.map(d =>
-            `<span class="chip dlc">${esc(dlcName(d))}</span>`).join(" ")}</div>` : ""}
+        ${about ? `<div class="sub" style="margin-top:5px">${esc(trunc(about, 130))}</div>` : ""}
+        <div style="margin-top:6px">
+          ${b.id === c.pick ? `<span class="chip rec">советую начать с него</span> ` : ""}
+          ${role ? `<span class="chip">${esc(role)}</span> ` : ""}
+          ${(b.dlc || []).map(d => `<span class="chip dlc">${esc(dlcName(d))}</span>`).join(" ")}
+        </div>
         </div><div class="go">›</div>`;
       n.onclick = () => location.hash = `#/b/${c.id}/${b.id}`;
       m.append(n);
@@ -337,7 +362,7 @@ function viewBuild(cid, bid) {
   const c = D.characters.find(x => x.id === cid);
   const b = c && c.builds.find(x => x.id === bid);
   if (!b) return location.hash = "#/";
-  setHead(c.ru, b.title, "#/c/" + c.id);
+  setHead(c.ru, b.titleRu || b.title, "#/c/" + c.id);
   const m = $("#app"); m.innerHTML = "";
 
   const tabs = el("div", "tabs");
@@ -410,7 +435,8 @@ function paneNow(root, c, b) {
     }
     if (b.desc) {
       out.append(el("div", "sect", "Замысел билда"));
-      out.append(el("div", "card small", esc(b.desc) +
+      out.append(el("div", "card small",
+        (b.descRu ? esc(b.descRu) + `<div class="en" style="margin-top:6px">${esc(b.desc)}</div>` : esc(b.desc)) +
         (b.video ? `<div style="margin-top:8px"><a href="${esc(b.video)}" target="_blank" rel="noopener">Видео-разбор ↗</a></div>` : "")));
     }
   }
@@ -443,7 +469,9 @@ function sheetFor(opts) {
     const k = KIND[o.t] || KIND.other;
     return `<h3>${o.ru ? esc(o.ru) + " " : ""}<span class="muted" style="font-size:16px">${esc(o.n)}${o.r ? " " + esc(o.r) : ""}</span></h3>
       <div class="small" style="color:var(--gold-dim);letter-spacing:.1em;text-transform:uppercase">${esc(k[0])}</div>
-      <p class="small" style="color:var(--ink)">${o.d ? esc(o.d) : '<span class="muted">Описание недоступно — сверься с игрой.</span>'}</p>`;
+      ${o.dr ? `<p class="small" style="color:var(--ink)">${esc(o.dr)}</p>` : ""}
+      <p class="small ${o.dr ? "en" : ""}" style="${o.dr ? "" : "color:var(--ink)"}">${
+        o.d ? esc(o.d) : (o.dr ? "" : '<span class="muted">Описание недоступно — сверься с игрой.</span>')}</p>`;
   }).join('<div class="rule"></div>'));
 }
 
@@ -480,7 +508,7 @@ function paneGear(root, c, b) {
        <div style="margin-top:3px">${esc(items)}</div></div>`).join("");
   root.append(card);
   root.append(el("div", "card small muted",
-    "Названия предметов даны как в англоязычной вики — в русской версии ищи по смыслу и слоту."));
+    "Названия предметов — из русской версии игры. Через «/» перечислены равноценные варианты: бери что найдётся."));
 }
 
 /* ---------- settings ---------- */
