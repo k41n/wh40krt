@@ -43,6 +43,20 @@ SHORT = {
  'Overseer': 'с тобой питомец: и урон, и поддержка',
 }
 
+T1SHORT = {
+ 'Warrior': 'до 16-го воин — ближний бой',
+ 'Soldier': 'до 16-го солдат — стрельба',
+ 'Operative': 'до 16-го оперативник — уязвимости',
+ 'Officer': 'до 16-го офицер — приказы',
+ 'Blade Dancer': 'до 16-го танцор клинков — удары на ходу',
+}
+
+# характеристики в винительном: «качаешь ловкость и волю»
+STAT_ACC = {'Сила': 'силу', 'Воля': 'волю', 'Общительность': 'общительность',
+            'Ловкость': 'ловкость', 'Выносливость': 'выносливость',
+            'Восприятие': 'восприятие', 'Интеллект': 'интеллект',
+            'Ближний Бой': 'ближний бой', 'Дальний Бой': 'дальний бой'}
+
 T3 = 'После 36-го идёт гранд-магистр: билд уже собран, дальше только докручиваешь то, что и так работает.'
 
 # оружие → на что это похоже в бою
@@ -107,22 +121,47 @@ def picks(b):
 
 
 def rare(values, counts, total, limit=2):
-    """черты, которые есть у этого билда и почти нет у соседних"""
-    cap = max(1, int(total * 0.3))
-    return [v for v in values if counts[v] <= cap][:limit]
+    """черты, которые есть у этого билда и почти нет у соседей по группе"""
+    cap_n = max(1, int(total * 0.3))
+    return [v for v in values if counts[v] <= cap_n][:limit]
+
+
+def peers(b, builds):
+    """с кем этот билд реально путают: тот же персонаж, тот же архетип II ступени.
+    У ГГ таких групп много (24 архмилитанта!), и сравнивать надо внутри группы,
+    иначе «Экспертная стрельба» кажется редкой, хотя она у половины сборок."""
+    same = [x for x in builds if x['tiers'][1] == b['tiers'][1]]
+    return same if len(same) >= 3 else builds
+
+
+def counts_of(builds, ps):
+    cnt = {k: Counter() for k in ('ult', 'key', 'talent', 'stat', 'weapon', 't1')}
+    for b in builds:
+        p = ps[b['id']]
+        for k in ('ult', 'key', 'talent', 'stat'):
+            for v in p[k]:
+                cnt[k][v] += 1
+        if p['weapon']:
+            cnt['weapon'][p['weapon']] += 1
+        cnt['t1'][b['tiers'][0]] += 1
+    return cnt
 
 
 def clauses(b, p, cnt, total):
     """кусочки описания, от самого отличающего к общему"""
     out = []
+    cap_n = max(1, int(total * 0.3))
     weapon, flavor = main_weapon(b)
     if weapon:
-        uniq = cnt['weapon'][weapon] <= max(1, int(total * 0.3))
+        uniq = cnt['weapon'][weapon] <= cap_n
         name = weapon
         sets = weapon_sets(b)
         if not uniq and len(sets) > 1:       # первое оружие как у соседей — назовём второе
             name = ' и '.join(sets)
         out.append(('weapon', uniq, f'{name}: {flavor}' if flavor else name))
+    if len(cnt['t1']) > 1 and T1SHORT.get(b['tiers'][0]):
+        # в группе есть и те, кто начинал иначе — это реальная разница в игре
+        out.append(('t1', True, T1SHORT[b['tiers'][0]]))
     for u in rare(p['ult'], cnt['ult'], total, 1):
         out.append(('ult', True, f'ульта «{u}»'))
     for k in rare(p['key'], cnt['key'], total, 1):
@@ -132,9 +171,9 @@ def clauses(b, p, cnt, total):
         word = 'таланты ' if len(tal) > 1 else 'талант '
         out.append(('talent', True, word + ' и '.join(f'«{t}»' for t in tal)))
     if p['stat']:
-        st = cnt['stat']
-        uniq = any(st[s] <= max(1, int(total * 0.3)) for s in p['stat'])
-        out.append(('stat', uniq, 'качаешь ' + ' и '.join(s.lower() for s in p['stat'])))
+        uniq = any(cnt['stat'][s] <= cap_n for s in p['stat'])
+        out.append(('stat', uniq, 'качаешь '
+                    + ' и '.join(STAT_ACC.get(s, s.lower()) for s in p['stat'])))
     return out
 
 
@@ -146,10 +185,13 @@ def short_line(b, cl, extra=0):
     """строка для списка: сначала то, чем билд отличается, потом суть архетипа"""
     # оружие всегда впереди — это самое осязаемое, а дальше редкие черты
     head = [c for t, _, c in cl if t == 'weapon']
-    uniq = [c for t, u, c in cl if u and t != 'weapon']
+    head += [c for t, _, c in cl if t == 't1']
+    uniq = [c for t, u, c in cl if u and t in ('ult', 'key', 'talent')]
+    if not uniq or extra:                    # характеристики — только если сказать нечего
+        uniq += [c for t, u, c in cl if u and t == 'stat']
     head += uniq[:2 + extra]
     if extra and len(uniq) < 2 + extra:      # редкого не хватило — берём общее
-        head += [c for t, u, c in cl if not u and t != 'weapon'][:extra]
+        head += [c for t, u, c in cl if not u and t not in ('weapon', 't1')][:extra]
     if not head:
         head = [c for _, _, c in cl][:1 + extra]
     tail = SHORT.get(b['tiers'][1])
@@ -166,7 +208,8 @@ def long_line(b, cl, many):
         parts.append(f'В руках — {w}.')
     body = [c for t, u, c in cl if u and t in ('ult', 'key', 'talent', 'stat')]
     if many and body:
-        parts.append('Чем отличается от соседних сборок: ' + ', '.join(body) + '.')
+        parts.append('Чем отличается от соседних сборок того же архетипа: '
+                     + ', '.join(body) + '.')
     elif body:
         parts.append(cap(', '.join(body)) + '.')
     parts.append(T3)
@@ -178,20 +221,15 @@ def main():
     n = 0
     for c in d['characters']:
         builds = c['builds']
-        total = len(builds)
         ps = {b['id']: picks(b) for b in builds}
-        cnt = {k: Counter() for k in ('ult', 'key', 'talent', 'stat', 'weapon', 'arch')}
-        for b in builds:
-            p = ps[b['id']]
-            for k in ('ult', 'key', 'talent', 'stat'):
-                for v in p[k]:
-                    cnt[k][v] += 1
-            if p['weapon']:
-                cnt['weapon'][p['weapon']] += 1
-            cnt['arch'][b['tiers'][1]] += 1
-
+        cache = {}
         seen = {}
         for b in builds:
+            key = b['tiers'][1]
+            if key not in cache:
+                grp = peers(b, builds)
+                cache[key] = (counts_of(grp, ps), len(grp))
+            cnt, total = cache[key]
             p = ps[b['id']]
             cl = clauses(b, p, cnt, total)
             line = short_line(b, cl)
@@ -201,7 +239,7 @@ def main():
                 line = short_line(b, cl, extra)
             seen[line] = b['id']
             b['feelShort'] = line
-            b['feel'] = long_line(b, cl, total > 1)
+            b['feel'] = long_line(b, cl, len(builds) > 1)
             n += 1
     print('описаний «как играется»:', n)
     json.dump(d, open('data.json', 'w', encoding='utf-8'),
