@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Кодекс прокачки — Rogue Trader</title>
+<meta name="theme-color" content="#0d0c0a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Кодекс">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+:root{
+  --bg:#0c0b09; --panel:#15130f; --panel2:#1c1913; --line:#302a20;
+  --ink:#e9e1cf; --dim:#9a9080; --faint:#6d6555;
+  --gold:#c9a24a; --gold-dim:#8a6f31; --blood:#a3352a; --green:#6f8f4a;
+  --r:14px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  padding-bottom:env(safe-area-inset-bottom);
+  overscroll-behavior-y:none;
+}
+h1,h2,h3,.disp{font-family:Georgia,"Times New Roman",serif;font-weight:600;letter-spacing:.02em}
+a{color:var(--gold)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+/* ---------- chrome ---------- */
+header{
+  position:sticky;top:0;z-index:20;
+  background:linear-gradient(#15130f,#12100c);
+  border-bottom:1px solid var(--line);
+  padding:calc(10px + env(safe-area-inset-top)) 12px 10px;
+  display:flex;align-items:center;gap:10px;
+}
+header .ttl{flex:1;min-width:0}
+header .ttl b{display:block;font-family:Georgia,serif;font-size:17px;line-height:1.2;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header .ttl span{display:block;font-size:12px;color:var(--dim);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.iconbtn{width:38px;height:38px;border:1px solid var(--line);border-radius:10px;
+  display:grid;place-items:center;color:var(--gold);background:#100e0b;flex:none;font-size:18px}
+.iconbtn:active{background:#1d1a14}
+main{padding:14px 12px 40px;max-width:720px;margin:0 auto}
+
+/* ---------- generic ---------- */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.card+.card{margin-top:10px}
+.muted{color:var(--dim)}
+.small{font-size:13px}
+.sect{margin:22px 0 10px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-dim)}
+.sect:first-child{margin-top:4px}
+.chip{display:inline-block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--dim);background:#100e0b}
+.chip.on{color:var(--gold);border-color:var(--gold-dim)}
+.chip.dlc{color:var(--blood);border-color:#4a231e}
+.row{display:flex;align-items:center;gap:10px}
+.grow{flex:1;min-width:0}
+.rule{height:1px;background:var(--line);margin:14px 0}
+
+/* ---------- lists ---------- */
+.item{display:flex;align-items:center;gap:12px;width:100%;text-align:left;
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  padding:13px 14px;margin-bottom:8px}
+.item:active{background:var(--panel2)}
+.item .nm{font-family:Georgia,serif;font-size:16px}
+.item .sub{font-size:12.5px;color:var(--dim);margin-top:2px}
+.item .go{color:var(--gold-dim);font-size:18px;flex:none}
+.avatar{width:38px;height:38px;flex:none;border-radius:9px;display:grid;place-items:center;
+  font-family:Georgia,serif;font-size:17px;color:var(--gold);
+  background:radial-gradient(circle at 30% 25%,#2a2419,#141209);border:1px solid var(--line)}
+
+/* ---------- level stepper ---------- */
+.stepwrap{background:linear-gradient(#191610,#131109);border:1px solid var(--line);
+  border-radius:var(--r);padding:14px}
+.stepper{display:flex;align-items:center;gap:14px}
+.stepper button{width:52px;height:52px;border-radius:12px;border:1px solid var(--line);
+  background:#100e0b;font-size:26px;color:var(--gold);display:grid;place-items:center}
+.stepper button:disabled{opacity:.3}
+.stepper button:active:not(:disabled){background:#241f16}
+.lvlbox{flex:1;text-align:center}
+.lvlbox .n{font-family:Georgia,serif;font-size:44px;line-height:1;color:var(--gold)}
+.lvlbox .l{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+input[type=range]{width:100%;margin-top:14px;accent-color:var(--gold);height:26px}
+
+/* ---------- picks ---------- */
+.pick{border:1px solid var(--line);border-radius:12px;background:var(--panel);
+  padding:12px 13px;margin-top:8px;display:block;width:100%;text-align:left}
+.pick:active{background:var(--panel2)}
+.pick .kind{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-dim)}
+.pick .name{font-family:Georgia,serif;font-size:19px;line-height:1.25;margin-top:3px}
+.pick .ru{color:var(--gold);}
+.pick .en{color:var(--dim);font-size:14px;font-family:inherit}
+.pick .rank{color:var(--blood)}
+.pick .note{font-size:12.5px;color:var(--dim);margin-top:4px}
+.alts{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+.alts .lbl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.t-char{border-left:3px solid #5a7fa3}
+.t-skill{border-left:3px solid #6f8f4a}
+.t-talent{border-left:3px solid var(--gold-dim)}
+.t-ability{border-left:3px solid #a3722a}
+.t-key{border-left:3px solid var(--blood)}
+.t-ult{border-left:3px solid var(--blood)}
+.t-ap{border-left:3px solid #7a5ea3}
+.t-other{border-left:3px solid var(--line)}
+
+/* ---------- plan ---------- */
+.plan .lv{display:flex;gap:10px;padding:9px 2px;border-bottom:1px solid #221e17;align-items:flex-start}
+.plan .lv.cur{background:#1a1710;border-radius:8px;padding-left:8px;padding-right:8px;
+  border-bottom-color:transparent;box-shadow:inset 0 0 0 1px var(--gold-dim)}
+.plan .lv.past{opacity:.45}
+.plan .num{width:34px;flex:none;font-family:Georgia,serif;color:var(--gold-dim);font-size:15px;text-align:right}
+.plan .body{flex:1;min-width:0;font-size:14.5px}
+.plan .body i{font-style:normal;color:var(--dim)}
+.tierhead{margin:18px 0 6px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--gold);display:flex;gap:8px;align-items:baseline}
+.tierhead small{color:var(--faint);letter-spacing:.04em;text-transform:none}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;gap:6px;margin:14px 0 4px;position:sticky;top:59px;z-index:10;
+  background:var(--bg);padding:8px 0}
+.tabs button{flex:1;padding:9px 4px;border:1px solid var(--line);border-radius:10px;
+  font-size:13px;color:var(--dim);background:#100e0b}
+.tabs button[aria-selected=true]{color:var(--gold);border-color:var(--gold-dim);background:#1b1710}
+
+/* ---------- sheet ---------- */
+.scrim{position:fixed;inset:0;background:#000a;z-index:40;display:none}
+.scrim.open{display:block}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:41;transform:translateY(101%);
+  transition:transform .22s ease;background:var(--panel2);border-top:1px solid var(--gold-dim);
+  border-radius:18px 18px 0 0;padding:16px 16px calc(22px + env(safe-area-inset-bottom));
+  max-height:78vh;overflow:auto}
+.sheet.open{transform:none}
+.sheet h3{margin:0 0 2px;font-size:21px}
+.grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 12px}
+
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0}
+.sw{width:50px;height:29px;border-radius:999px;background:#241f18;border:1px solid var(--line);
+  position:relative;flex:none;transition:background .15s}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;
+  background:var(--dim);transition:.15s}
+.sw.on{background:#3a2f16;border-color:var(--gold-dim)}
+.sw.on::after{left:24px;background:var(--gold)}
+.empty{text-align:center;color:var(--dim);padding:40px 10px}
+.toast{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));
+  z-index:60;display:flex;gap:10px;align-items:center;justify-content:space-between;
+  background:var(--panel);border:1px solid var(--gold-dim);border-radius:12px;
+  padding:11px 12px;font-size:13px;box-shadow:0 8px 28px #000a;max-width:520px;margin:0 auto}
+.toast button{background:var(--gold);color:#14110a;border:0;border-radius:8px;
+  padding:7px 12px;font:inherit;font-weight:600;cursor:pointer;flex:none}
+footer{padding:26px 12px 40px;text-align:center;color:var(--faint);font-size:11.5px;max-width:720px;margin:0 auto}
+</style>
+</head>
+<body>
+<header>
+  <button class="iconbtn" id="back" hidden aria-label="Назад">‹</button>
+  <div class="ttl"><b id="h-title">Кодекс прокачки</b><span id="h-sub">Warhammer 40 000: Rogue Trader</span></div>
+  <button class="iconbtn" id="cfg" aria-label="Настройки">⚙</button>
+</header>
+<main id="app"><div class="empty">Загрузка кодекса…</div></main>
+<footer id="foot"></footer>
+
+<div class="toast" id="upd" hidden>
+  <span>Есть новая версия кодекса</span><button id="upd-go">Обновить</button>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet"><div class="grab"></div><div id="sheet-body"></div></div>
+
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+const el = (t, c, h) => { const n = document.createElement(t); if (c) n.className = c;
+  if (h !== undefined) n.innerHTML = h; return n; };
+const esc = s => String(s ?? "").replace(/[&<>"]/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+
+const LS = {
+  get(k, d) { try { const v = localStorage.getItem("rt." + k); return v === null ? d : JSON.parse(v); }
+              catch { return d; } },
+  set(k, v) { try { localStorage.setItem("rt." + k, JSON.stringify(v)); } catch {} }
+};
+
+const DLC = [
+  { id: "void_shadows",   ru: "Void Shadows",   note: "Танцор смерти, Палач, Кибелла" },
+  { id: "lex_imperialis", ru: "Lex Imperialis", note: "Надзиратель, Арбитр, Соломорн, Эогунн" }
+];
+const KIND = {
+  key:     ["Ключевая способность", "Keystone"],
+  ult:     ["Абсолютная способность", "Ultimate"],
+  ability: ["Способность", "Ability"],
+  talent:  ["Талант", "Talent"],
+  char:    ["Характеристика +5", "Characteristic"],
+  skill:   ["Навык +10", "Skill"],
+  ap:      ["Очко действия", "AP"],
+  other:   ["Выбор", ""]
+};
+const TIERS = [[1, 15, "I ступень", 0], [16, 35, "II ступень", 1], [36, 55, "III ступень", 2]];
+const tierOf = l => l <= 15 ? 0 : l <= 35 ? 1 : 2;
+// [видимое имя, английское имя или ""] — не дублируем, если перевода нет
+const archName = (b, i) => {
+  const ru = b.tiersRu[i], en = b.tiers[i];
+  return ru && ru !== en ? [ru, en] : [en, ""];
+};
+
+let D = null;
+
+/* ---------- state ---------- */
+const dlcOn   = () => LS.get("dlc", { void_shadows: true, lex_imperialis: true });
+const setDlc  = v => LS.set("dlc", v);
+const lvlOf   = (c, b) => LS.get(`lv.${c}.${b}`, 1);
+const setLvl  = (c, b, v) => LS.set(`lv.${c}.${b}`, v);
+
+function buildAllowed(ch, b) {
+  const on = dlcOn();
+  return (b.dlc || []).every(d => on[d]);
+}
+function charAllowed(ch) {
+  const on = dlcOn();
+  if (ch.dlc !== "base" && !on[ch.dlc]) return false;
+  return ch.builds.some(b => buildAllowed(ch, b));
+}
+
+/* ---------- routing ---------- */
+function route() {
+  const h = location.hash.replace(/^#\/?/, "");
+  const p = h ? h.split("/") : [];
+  window.scrollTo(0, 0);
+  closeSheet();
+  if (p[0] === "c" && p[1]) return viewChar(p[1]);
+  if (p[0] === "b" && p[1] && p[2]) return viewBuild(p[1], p[2]);
+  return viewHome();
+}
+function setHead(title, sub, back) {
+  $("#h-title").textContent = title;
+  $("#h-sub").textContent = sub || "";
+  $("#back").hidden = !back;
+  $("#back").onclick = () => { location.hash = back; };
+}
+
+/* ---------- sheet ---------- */
+function openSheet(html) {
+  $("#sheet-body").innerHTML = html;
+  $("#sheet").classList.add("open"); $("#scrim").classList.add("open");
+}
+function closeSheet() {
+  $("#sheet").classList.remove("open"); $("#scrim").classList.remove("open");
+}
+$("#scrim").onclick = closeSheet;
+
+/* ---------- home ---------- */
+function viewHome() {
+  setHead("Кодекс прокачки", "Warhammer 40 000: Rogue Trader", null);
+  const m = $("#app"); m.innerHTML = "";
+  const comp = D.characters.filter(c => c.kind === "companion" && charAllowed(c));
+  const rt   = D.characters.filter(c => c.kind === "rt" && charAllowed(c));
+  const sec  = D.characters.filter(c => c.kind === "secret" && charAllowed(c));
+
+  m.append(el("div", "sect", "Вольный Торговец"));
+  rt.forEach(c => m.append(charRow(c)));
+  m.append(el("div", "sect", "Компаньоны"));
+  if (!comp.length) m.append(el("div", "empty", "Ничего не подходит под выбранные DLC."));
+  comp.forEach(c => m.append(charRow(c)));
+  if (sec.length) {
+    m.append(el("div", "sect", "Особые спутники"));
+    m.append(el("div", "card small muted",
+      "Появляются поздно и не у всех — берутся по ходу сюжета."));
+    sec.forEach(c => m.append(charRow(c)));
+  }
+
+  const hidden = D.characters.filter(c => !charAllowed(c));
+  if (hidden.length) {
+    const n = el("div", "card small muted",
+      "Скрыто по набору DLC: " + hidden.map(c => esc(c.ru)).join(", ") +
+      '. <a href="#" id="opencfg">Изменить DLC</a>');
+    n.style.marginTop = "14px";
+    m.append(n);
+    n.querySelector("#opencfg").onclick = e => { e.preventDefault(); cfgSheet(); };
+  }
+}
+function charRow(c) {
+  const n = el("button", "item");
+  const nb = c.builds.filter(b => buildAllowed(c, b)).length;
+  n.innerHTML = `<div class="avatar">${esc(c.ru[0])}</div>
+    <div class="grow"><div class="nm">${esc(c.ru)}</div>
+    <div class="sub">${esc(c.en)} · ${nb} ${plural(nb, "билд", "билда", "билдов")}</div></div>
+    <div class="go">›</div>`;
+  n.onclick = () => location.hash = "#/c/" + c.id;
+  return n;
+}
+const plural = (n, a, b, c) => {
+  const m10 = n % 10, m100 = n % 100;
+  if (m10 === 1 && m100 !== 11) return a;
+  if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return b;
+  return c;
+};
+
+/* ---------- character ---------- */
+function viewChar(cid) {
+  const c = D.characters.find(x => x.id === cid);
+  if (!c) return location.hash = "#/";
+  setHead(c.ru, c.en, "#/");
+  const m = $("#app"); m.innerHTML = "";
+  const bs = c.builds.filter(b => buildAllowed(c, b));
+  m.append(el("div", "sect", "Выбери билд"));
+  if (!bs.length) m.append(el("div", "empty", "Для выбранных DLC билдов нет."));
+
+  const groups = {};
+  bs.forEach(b => (groups[b.tiers[1]] = groups[b.tiers[1]] || []).push(b));
+  Object.keys(groups).sort().forEach(t2 => {
+    m.append(el("div", "sect", (D.archRu[t2] || t2) + " · " + t2));
+    groups[t2].forEach(b => {
+      const n = el("button", "item");
+      n.innerHTML = `<div class="grow">
+        <div class="nm">${esc(b.title)}</div>
+        <div class="sub">${b.tiersRu.map(esc).join(" → ")}</div>
+        ${b.desc ? `<div class="sub" style="margin-top:5px">${esc(trunc(b.desc, 120))}</div>` : ""}
+        ${(b.dlc || []).length ? `<div style="margin-top:6px">${b.dlc.map(d =>
+            `<span class="chip dlc">${esc(dlcName(d))}</span>`).join(" ")}</div>` : ""}
+        </div><div class="go">›</div>`;
+      n.onclick = () => location.hash = `#/b/${c.id}/${b.id}`;
+      m.append(n);
+    });
+  });
+}
+const trunc = (s, n) => s.length > n ? s.slice(0, n - 1).trimEnd() + "…" : s;
+const dlcName = d => (DLC.find(x => x.id === d) || {}).ru || d;
+
+/* ---------- build ---------- */
+function viewBuild(cid, bid) {
+  const c = D.characters.find(x => x.id === cid);
+  const b = c && c.builds.find(x => x.id === bid);
+  if (!b) return location.hash = "#/";
+  setHead(c.ru, b.title, "#/c/" + c.id);
+  const m = $("#app"); m.innerHTML = "";
+
+  const tabs = el("div", "tabs");
+  const pane = el("div");
+  const names = [["now", "Уровень"], ["plan", "План 1–55"], ["gear", "Снаряжение"]];
+  let cur = LS.get("tab", "now");
+  names.forEach(([k, lbl]) => {
+    const t = el("button", "", lbl);
+    t.onclick = () => { cur = k; LS.set("tab", k); render(); };
+    t.dataset.k = k; tabs.append(t);
+  });
+  m.append(tabs, pane);
+
+  function render() {
+    [...tabs.children].forEach(t => t.setAttribute("aria-selected", t.dataset.k === cur));
+    pane.innerHTML = "";
+    if (cur === "now")  paneNow(pane, c, b);
+    if (cur === "plan") panePlan(pane, c, b);
+    if (cur === "gear") paneGear(pane, c, b);
+  }
+  render();
+}
+
+function paneNow(root, c, b) {
+  let lv = Math.min(55, Math.max(1, lvlOf(c.id, b.id)));
+
+  const wrap = el("div", "stepwrap");
+  const st = el("div", "stepper");
+  const minus = el("button", "", "−"), plus = el("button", "", "+");
+  const box = el("div", "lvlbox");
+  st.append(minus, box, plus);
+  const range = el("input"); range.type = "range"; range.min = 1; range.max = 55;
+  wrap.append(st, range);
+  root.append(wrap);
+
+  const out = el("div");
+  root.append(out);
+
+  function draw() {
+    setLvl(c.id, b.id, lv);
+    range.value = lv;
+    minus.disabled = lv <= 1; plus.disabled = lv >= 55;
+    const t = TIERS[tierOf(lv)];
+    box.innerHTML = `<div class="n">${lv}</div>
+      <div class="l">${esc(t[2])} · ${esc(archName(b, t[3])[0])}</div>`;
+    out.innerHTML = "";
+
+    const rows = (b.levels[lv] || []);
+    if (!rows.length) {
+      out.append(el("div", "card muted", "На этом уровне выбирать нечего — просто повышение."));
+    } else {
+      out.append(el("div", "sect", `Уровень ${lv} — бери:`));
+      rows.forEach(opts => out.append(pickCard(opts)));
+    }
+
+    // tier transition hint
+    if (lv === 16 || lv === 36) {
+      const n = el("div", "card");
+      n.style.borderColor = "var(--gold-dim)";
+      n.innerHTML = `<div class="sect" style="margin-top:0">Смена архетипа</div>
+        На 16-м уровне выбирается архетип II тира, на 36-м — «Образец».<br>
+        Здесь бери: <b class="disp" style="color:var(--gold)">${esc(b.tiersRu[lv === 16 ? 1 : 2])}</b>
+        <span class="muted">(${esc(b.tiers[lv === 16 ? 1 : 2])})</span>`;
+      out.append(n);
+    }
+
+    if (b.skills && b.skills.length) {
+      out.append(el("div", "sect", "Куда сыпать очки навыков"));
+      out.append(el("div", "card", b.skills.map(esc).join("<br>")));
+    }
+    if (b.desc) {
+      out.append(el("div", "sect", "Замысел билда"));
+      out.append(el("div", "card small", esc(b.desc) +
+        (b.video ? `<div style="margin-top:8px"><a href="${esc(b.video)}" target="_blank" rel="noopener">Видео-разбор ↗</a></div>` : "")));
+    }
+  }
+  minus.onclick = () => { lv = Math.max(1, lv - 1); draw(); };
+  plus.onclick  = () => { lv = Math.min(55, lv + 1); draw(); };
+  range.oninput = () => { lv = +range.value; draw(); };
+  draw();
+}
+
+function pickCard(opts) {
+  const main = opts[0];
+  const n = el("button", "pick t-" + main.t);
+  const k = KIND[main.t] || KIND.other;
+  n.innerHTML = `<div class="kind">${esc(k[0])}${k[1] ? " · " + k[1] : ""}</div>
+    <div class="name">${nameHtml(main)}</div>
+    ${main.note ? `<div class="note">${esc(main.note)}</div>` : ""}
+    ${opts.length > 1 ? `<div class="alts"><div class="lbl">или равноценно</div>${
+      opts.slice(1).map(o => `<div class="name" style="font-size:16px">${nameHtml(o)}</div>`).join("")
+    }</div>` : ""}`;
+  n.onclick = () => sheetFor(opts);
+  return n;
+}
+function nameHtml(o) {
+  const ru = o.ru ? `<span class="ru">${esc(o.ru)}</span> ` : "";
+  const rank = o.r ? ` <span class="rank">${esc(o.r)}</span>` : "";
+  return `${ru}<span class="${o.ru ? "en" : "ru"}">${esc(o.n)}</span>${rank}`;
+}
+function sheetFor(opts) {
+  openSheet(opts.map(o => {
+    const k = KIND[o.t] || KIND.other;
+    return `<h3>${o.ru ? esc(o.ru) + " " : ""}<span class="muted" style="font-size:16px">${esc(o.n)}${o.r ? " " + esc(o.r) : ""}</span></h3>
+      <div class="small" style="color:var(--gold-dim);letter-spacing:.1em;text-transform:uppercase">${esc(k[0])}</div>
+      <p class="small" style="color:var(--ink)">${o.d ? esc(o.d) : '<span class="muted">Описание недоступно — сверься с игрой.</span>'}</p>`;
+  }).join('<div class="rule"></div>'));
+}
+
+function panePlan(root, c, b) {
+  const cur = lvlOf(c.id, b.id);
+  const wrap = el("div", "plan");
+  TIERS.forEach(([lo, hi, label, ti]) => {
+    const h = el("div", "tierhead");
+    const nm = archName(b, ti);
+    h.innerHTML = `${esc(label)} · ${esc(nm[0])} <small>${nm[1] ? esc(nm[1]) + " · " : ""}ур. ${lo}–${hi}</small>`;
+    wrap.append(h);
+    for (let l = lo; l <= hi; l++) {
+      const rows = b.levels[l] || [];
+      const n = el("div", "lv" + (l === cur ? " cur" : l < cur ? " past" : ""));
+      n.innerHTML = `<div class="num">${l}</div><div class="body">${
+        rows.length
+          ? rows.map(o => `<div>${nameHtml(o[0])}${o.length > 1 ? ` <i>/ ${o.slice(1).map(x => esc(x.ru || x.n)).join(" / ")}</i>` : ""}</div>`).join("")
+          : '<i>—</i>'}</div>`;
+      n.onclick = () => { setLvl(c.id, b.id, l); LS.set("tab", "now"); route(); };
+      wrap.append(n);
+    }
+  });
+  root.append(wrap);
+}
+
+function paneGear(root, c, b) {
+  if (!b.gear || !b.gear.length)
+    return root.append(el("div", "empty", "Для этого билда список снаряжения не приводится."));
+  root.append(el("div", "sect", "Что искать и надевать"));
+  const card = el("div", "card");
+  card.innerHTML = b.gear.map(([slot, items]) =>
+    `<div style="padding:9px 0;border-bottom:1px solid #221e17">
+       <div class="small" style="color:var(--gold-dim);letter-spacing:.08em;text-transform:uppercase">${esc(slot)}</div>
+       <div style="margin-top:3px">${esc(items)}</div></div>`).join("");
+  root.append(card);
+  root.append(el("div", "card small muted",
+    "Названия предметов даны как в англоязычной вики — в русской версии ищи по смыслу и слоту."));
+}
+
+/* ---------- settings ---------- */
+function cfgSheet() {
+  const on = dlcOn();
+  openSheet(`<h3>Набор DLC</h3>
+    <p class="small muted">Отключённые дополнения убирают своих компаньонов, архетипы и билды из списков.</p>
+    <div id="dlclist"></div>
+    <div class="rule"></div>
+    <div class="small muted">Данные билдов: гайд Revan619 (патч 1.6). Приложение работает офлайн.</div>`);
+  const list = $("#dlclist");
+  DLC.forEach(d => {
+    const r = el("div", "toggle");
+    r.innerHTML = `<div class="grow"><div>${esc(d.ru)}</div>
+      <div class="small muted">${esc(d.note)}</div></div>
+      <div class="sw${on[d.id] ? " on" : ""}"></div>`;
+    r.onclick = () => {
+      const v = dlcOn(); v[d.id] = !v[d.id]; setDlc(v);
+      r.querySelector(".sw").classList.toggle("on", v[d.id]);
+    };
+    list.append(r);
+  });
+}
+$("#cfg").onclick = cfgSheet;
+
+/* ---------- boot ---------- */
+fetch("data.json").then(r => r.json()).then(d => {
+  D = d;
+  // index builds by id for quick lookup
+  addEventListener("hashchange", route);
+  route();
+  $("#foot").innerHTML =
+    `Источники: <a href="${esc(d.meta.sources[0])}" target="_blank" rel="noopener">гайд Revan619</a>, ` +
+    `<a href="${esc(d.meta.sources[1])}" target="_blank" rel="noopener">таблица билдов</a>, ` +
+    `<a href="${esc(d.meta.sources[2])}" target="_blank" rel="noopener">Fextralife wiki</a>.<br>` +
+    `Не является продуктом Owlcat Games / Games Workshop.`;
+}).catch(e => {
+  $("#app").innerHTML = `<div class="empty">Не удалось загрузить data.json.<br><span class="small">${esc(e)}</span></div>`;
+});
+
+// ── обновление установленного приложения ──────────────────────────────────
+// Новая версия sw.js встаёт в ожидание, мы показываем плашку; по кнопке
+// говорим воркеру skip-waiting и перезагружаем страницу, когда он взял управление.
+if ("serviceWorker" in navigator) addEventListener("load", async () => {
+  let reg;
+  try { reg = await navigator.serviceWorker.register("sw.js"); } catch { return; }
+
+  const offerUpdate = w => {
+    if (!w) return;
+    $("#upd").hidden = false;
+    $("#upd-go").onclick = () => { $("#upd-go").disabled = true; w.postMessage("skip-waiting"); };
+  };
+  if (reg.waiting && navigator.serviceWorker.controller) offerUpdate(reg.waiting);
+  reg.addEventListener("updatefound", () => {
+    const w = reg.installing;
+    w && w.addEventListener("statechange", () => {
+      // controller есть — значит это апдейт, а не первая установка
+      if (w.state === "installed" && navigator.serviceWorker.controller) offerUpdate(w);
+    });
+  });
+
+  let reloading = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (reloading) return;
+    reloading = true;
+    location.reload();
+  });
+
+  // проверяем обновления при запуске и при возврате к приложению, но не чаще раза в 15 минут
+  let last = 0;
+  const check = () => {
+    if (document.hidden || Date.now() - last < 9e5) return;
+    last = Date.now();
+    reg.update().catch(() => {});
+  };
+  check();
+  addEventListener("visibilitychange", check);
+});
+</script>
+</body>
+</html>
