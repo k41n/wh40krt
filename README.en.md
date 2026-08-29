@@ -33,11 +33,12 @@ the update is applied on the next launch.
   cannot be assembled without it.
 - **Character** → a **"Как выбрать"** ("how to choose") card at the top explains
   how the builds differ and which one to start with. Below it the builds are
-  grouped by their Tier II archetype; each shows a one-line **"how it plays"**
-  summary and the guide author's full note, untruncated; each carries a role chip ("universal
-  damage", "tank", "extra turns for the party"…) and the recommended one is
+  grouped by their Tier II archetype: the group header says once how that
+  archetype plays, and every build gets a line saying what sets it apart from
+  its neighbours in the same group (weapon, starting archetype, rare talents),
+  plus the guide author's full note, untruncated. The recommended one is
   marked "советую начать с него" ("start with this one").
-  Abelard has 8 builds, Heinrix 12, the Rogue Trader 64.
+  Abelard has 8 builds, Heinrix 12, the Rogue Trader 64 — 24 of them Arch-Militants.
 - **Build** → three tabs:
   - **Уровень** (Level) — a 1–55 slider and the answer: "at level 28 take …".
   - **План 1–55** (Plan) — the whole progression at once, split by tier.
@@ -126,7 +127,7 @@ python3 tools/apply_ru_manual.py                     # what the game has no text
 | `data.json` | 150 builds across 17 characters + 793 talent/ability descriptions |
 | `sw.js` | service worker: offline support, network-first for `index.html` and `data.json` |
 | `manifest.webmanifest`, `icon*.png/svg` | PWA plumbing |
-| `tools/feel.py` | "how it plays": what sets a build apart from its siblings — weapon, ultimate, keystone and talents that are rare for that character, plus the archetype gist |
+| `tools/feel.py` | "how it plays": what sets a build apart from its neighbours in the same archetype — weapon, ultimate, keystone and talents that are rare inside that group; plus one description per archetype for the group header |
 | `tools/patch_notes.py` | the currency layer: what changed in the game after the guide was compiled |
 | `tools/ru_manual.json` | the hand-written layer: build titles and blurbs, slots, rare items, the "how to choose" advice |
 | `tools/` | the scripts that generated `data.json` |
