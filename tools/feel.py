@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""«Как играется» — короткий текст про ощущения от билда.
+"""«Как играется» — чем этот билд отличается от соседних.
 
-Гайд отвечает на вопрос «что брать», но не на вопрос «каково им играть».
-Здесь для каждого билда собирается 3–5 предложений из того, что в билде
-действительно есть: архетипы I и II ступени, оружие из списка снаряжения,
-ключевые способности и абсолютная способность (по русским названиям из игры).
+Гайд отвечает на вопрос «что брать», но не на вопрос «каково им играть»
+и уж точно не на вопрос «чем этот архмилитант отличается от вон того».
+Поэтому текст собирается контрастно: для каждого персонажа считается,
+насколько редко та или иная черта (оружие, абсолютная и ключевая
+способности, качаемые характеристики, таланты) встречается у его билдов,
+и в описание идёт именно редкое — то, что отличает сборку от соседей.
 
 Запуск после apply_ru_manual.py (нужны русские названия), до patch_notes.py:
   python3 tools/feel.py
@@ -31,14 +33,14 @@ T2 = {
 }
 # то же самое одной строкой — для списка билдов, где решают, что выбрать
 SHORT = {
- 'Arch-Militant': 'Чем дольше бой, тем больнее бьёшь; ни расстановки, ни комбо не нужно',
- 'Assassin': 'Весь урон в одну цель — она обычно не доживает до своего хода',
- 'Vanguard': 'Стоишь в гуще, держишь удар и стягиваешь врагов на себя',
- 'Master Tactician': 'Сам жмёшь мало — раздаёшь отряду лишние ходы',
- 'Grand Strategist': 'Расставляешь зоны: бой выигрывается ещё до первого выстрела',
- 'Bounty Hunter': 'Метишь цель и добиваешь, за убийство возвращая себе ход',
- 'Executioner': 'Вешаешь кровотечения и яды — урон капает сам, пока бьёшь следующего',
- 'Overseer': 'С тобой питомец: больше решений за ход, зато и урон, и поддержка',
+ 'Arch-Militant': 'чем дольше бой, тем больнее бьёшь',
+ 'Assassin': 'весь урон в одну цель',
+ 'Vanguard': 'стоишь в гуще и держишь удар',
+ 'Master Tactician': 'раздаёшь отряду лишние ходы',
+ 'Grand Strategist': 'выигрываешь бой расстановкой зон',
+ 'Bounty Hunter': 'метишь цель и добиваешь ради лишнего хода',
+ 'Executioner': 'кровотечения и яды капают сами',
+ 'Overseer': 'с тобой питомец: и урон, и поддержка',
 }
 
 T3 = 'После 36-го идёт гранд-магистр: билд уже собран, дальше только докручиваешь то, что и так работает.'
@@ -54,7 +56,7 @@ WEAPON = [
  (r'лаз(ер|ган)|винтовк',   'бьёшь точно и часто'),
  (r'посох',                 'бьёшь силами варпа'),
  (r'пистолет',              'стреляешь вплотную, не выходя из свалки'),
- (r'нож|кинжал|клинок|меч|сабл|рапир', 'серия быстрых ударов'),
+ (r'нож|кинжал|клинок|меч|сабл|рапир|пила', 'серия быстрых ударов'),
  (r'молот|кувалда|булав|дубин',        'медленно, зато сносит с одного удара'),
  (r'топор|коса|цеп|копь',              'тяжёлые размашистые удары'),
 ]
@@ -76,45 +78,115 @@ def main_weapon(b):
     return first, flavor
 
 
-def weapon_line(b):
-    first, flavor = main_weapon(b)
-    if not first:
-        return None
-    return f'В руках — {first}' + (f': {flavor}.' if flavor else '.')
-
-
-def ability_line(b):
-    keys, ults = [], Counter()
-    for rows in b['levels'].values():
+def picks(b):
+    """что билд реально берёт: ульты, ключевые, таланты, характеристики"""
+    ults, keys, talents, stats = [], [], [], Counter()
+    for lv, rows in sorted(b['levels'].items(), key=lambda kv: int(kv[0])):
         for row in rows:
             o = row[0]
             n = o.get('ru') or o['n']
-            if o['t'] == 'key' and n not in keys:
+            t = o['t']
+            if t == 'ult' and n not in ults:
+                ults.append(n)
+            elif t == 'key' and n not in keys:
                 keys.append(n)
-            if o['t'] == 'ult':
-                ults[n] += 1
+            elif t == 'talent' and n not in talents:
+                talents.append(n)
+            elif t == 'char':
+                stats[n] += 1
+    return {'ult': ults, 'key': keys, 'talent': talents,
+            'stat': [s for s, _ in stats.most_common(2)],
+            'weapon': main_weapon(b)[0]}
+
+
+def rare(values, counts, total, limit=2):
+    """черты, которые есть у этого билда и почти нет у соседних"""
+    cap = max(1, int(total * 0.4))
+    return [v for v in values if counts[v] <= cap][:limit]
+
+
+def clauses(b, p, cnt, total):
+    """кусочки описания, от самого отличающего к общему"""
     out = []
-    if ults:
-        top = ults.most_common(1)[0][0]
-        out.append(f'Главная кнопка каждого боя — «{top}»')
-    if keys:
-        out.append(('опора билда — ' if out else 'Опора билда — ')
-                   + ', '.join(f'«{k}»' for k in keys[:3]))
-    return ('; '.join(out) + '.') if out else None
+    weapon, flavor = main_weapon(b)
+    if weapon:
+        uniq = cnt['weapon'][weapon] <= max(1, int(total * 0.4))
+        out.append(('weapon', uniq,
+                    f'{weapon}: {flavor}' if flavor else weapon))
+    for u in rare(p['ult'], cnt['ult'], total, 1):
+        out.append(('ult', True, f'ульта «{u}»'))
+    for k in rare(p['key'], cnt['key'], total, 1):
+        out.append(('key', True, f'ключевая «{k}»'))
+    tal = rare(p['talent'], cnt['talent'], total, 2)
+    if tal:
+        word = 'таланты ' if len(tal) > 1 else 'талант '
+        out.append(('talent', True, word + ' и '.join(f'«{t}»' for t in tal)))
+    if p['stat']:
+        st = cnt['stat']
+        uniq = any(st[s] <= max(1, int(total * 0.4)) for s in p['stat'])
+        out.append(('stat', uniq, 'качаешь ' + ' и '.join(s.lower() for s in p['stat'])))
+    return out
+
+
+def cap(s):
+    return s[0].upper() + s[1:] if s else s
+
+
+def short_line(b, cl, extra=0):
+    """строка для списка: сначала то, чем билд отличается, потом суть архетипа"""
+    head = [c for _, u, c in cl if u][:2 + extra]
+    if not head:
+        head = [c for _, _, c in cl][:1 + extra]
+    tail = SHORT.get(b['tiers'][1])
+    line = cap(', '.join(head)) if head else ''
+    if tail:
+        line = (line + '. ' if line else '') + cap(tail)
+    return line + '.'
+
+
+def long_line(b, cl, many):
+    parts = [T1.get(b['tiers'][0]), T2.get(b['tiers'][1])]
+    weapon, flavor = main_weapon(b)
+    if weapon:
+        parts.append(f'В руках — {weapon}' + (f': {flavor}.' if flavor else '.'))
+    body = [c for t, u, c in cl if u and t in ('ult', 'key', 'talent', 'stat')]
+    if many and body:
+        parts.append('Чем отличается от соседних сборок: ' + ', '.join(body) + '.')
+    elif body:
+        parts.append(cap(', '.join(body)) + '.')
+    parts.append(T3)
+    return ' '.join(p for p in parts if p)
 
 
 def main():
     d = json.load(open('data.json', encoding='utf-8'))
     n = 0
     for c in d['characters']:
-        for b in c['builds']:
-            t1, t2 = b['tiers'][0], b['tiers'][1]
-            parts = [T1.get(t1), T2.get(t2), weapon_line(b), ability_line(b), T3]
-            b['feel'] = ' '.join(p for p in parts if p)
-            short = SHORT.get(t2)
-            if short:
-                _, flavor = main_weapon(b)
-                b['feelShort'] = short + '.' + (f' {flavor[0].upper()}{flavor[1:]}.' if flavor else '')
+        builds = c['builds']
+        total = len(builds)
+        ps = {b['id']: picks(b) for b in builds}
+        cnt = {k: Counter() for k in ('ult', 'key', 'talent', 'stat', 'weapon', 'arch')}
+        for b in builds:
+            p = ps[b['id']]
+            for k in ('ult', 'key', 'talent', 'stat'):
+                for v in p[k]:
+                    cnt[k][v] += 1
+            if p['weapon']:
+                cnt['weapon'][p['weapon']] += 1
+            cnt['arch'][b['tiers'][1]] += 1
+
+        seen = {}
+        for b in builds:
+            p = ps[b['id']]
+            cl = clauses(b, p, cnt, total)
+            line = short_line(b, cl)
+            extra = 0
+            while line in seen and extra < 3:       # соседи не должны совпадать
+                extra += 1
+                line = short_line(b, cl, extra)
+            seen[line] = b['id']
+            b['feelShort'] = line
+            b['feel'] = long_line(b, cl, total > 1)
             n += 1
     print('описаний «как играется»:', n)
     json.dump(d, open('data.json', 'w', encoding='utf-8'),

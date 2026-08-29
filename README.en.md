@@ -126,7 +126,7 @@ python3 tools/apply_ru_manual.py                     # what the game has no text
 | `data.json` | 150 builds across 17 characters + 793 talent/ability descriptions |
 | `sw.js` | service worker: offline support, network-first for `index.html` and `data.json` |
 | `manifest.webmanifest`, `icon*.png/svg` | PWA plumbing |
-| `tools/feel.py` | "how it plays": build feel derived from its archetypes, weapons and abilities |
+| `tools/feel.py` | "how it plays": what sets a build apart from its siblings — weapon, ultimate, keystone and talents that are rare for that character, plus the archetype gist |
 | `tools/patch_notes.py` | the currency layer: what changed in the game after the guide was compiled |
 | `tools/ru_manual.json` | the hand-written layer: build titles and blurbs, slots, rare items, the "how to choose" advice |
 | `tools/` | the scripts that generated `data.json` |
