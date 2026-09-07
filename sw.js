@@ -1,7 +1,7 @@
 // Меняй VERSION при каждом деплое — этого достаточно, чтобы установленное
 // приложение подхватило обновление: браузер видит изменившийся байт-в-байт sw.js,
 // ставит новую версию в ожидание, страница показывает кнопку «Обновить».
-const VERSION = "2026-08-29.10";
+const VERSION = "2026-09-07.12";
 const CACHE = "rt-kodeks-" + VERSION;
 const ASSETS = ["./", "./index.html", "./data.json", "./manifest.webmanifest",
                 "./icon.svg", "./icon-192.png", "./icon-512.png", "./icon-180.png"];
@@ -9,7 +9,15 @@ const FRESH = /\/(index\.html|data\.json)$|\/$/;   // network-first: оболо�
 
 self.addEventListener("install", e => {
   // без skipWaiting: новая версия ждёт, пока страница не разрешит переключиться
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
+  e.waitUntil((async () => {
+    const c = await caches.open(CACHE);
+    await c.addAll(ASSETS);
+    // иконки вещей: список генерится сборкой, промах не ломает установку
+    try {
+      const list = await (await fetch("./icons/list.json")).json();
+      await c.addAll(["./icons/list.json", ...list.map(s => "./icons/" + s + ".webp")]);
+    } catch (err) {}
+  })());
 });
 
 self.addEventListener("activate", e => {
