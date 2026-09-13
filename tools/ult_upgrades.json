@@ -1,0 +1,123 @@
+{
+ "_src": "https://roguetrader.wh40k.wiki/Category:Heroic_Act — таблицы Upgrades; русский текст — ручной перевод",
+ "Carnival of Misery": {
+  "I":   ["After the Executioner uses Carnival of Misery, for any target that has suffered and will suffer damage from the Executioner this combat (both prior to and after this ability is used), their armour does not reduce damage dealt by damage-over-time effects.",
+          "После «Карнавала страданий» броня любой цели, которую Палач бил или будет бить в этом бою, не снижает урон от периодических эффектов."],
+  "II":  ["Whenever Carnival of Misery is used, enemies in a 6-cell radius suffering from any damage-over-time effects immediately suffer an additional instance of damage from those effects.",
+          "При использовании «Карнавала страданий» все враги в радиусе 6 клеток с периодическими эффектами сразу получают ещё один тик урона от них."],
+  "III": ["Until the end of combat, all damage dealt to enemies by the Executioner's damage-over-time effects is increased by +100% after all other modifiers have been applied.",
+          "До конца боя весь урон от периодических эффектов Палача увеличен на +100% после всех остальных модификаторов."],
+  "IV":  ["Until the end of combat, the Executioner is healed by damage-over-time effects instead of suffering damage. The number of wounds restored is equal to the amount of damage that would be dealt by an effect after all modifiers have been applied.",
+          "До конца боя периодические эффекты не ранят Палача, а лечат: восстанавливается столько здоровья, сколько урона нанёс бы эффект."]
+ },
+ "Daring Breach": {
+  "I":   ["Daring Breach also grants +10 movement points until the end of the turn. The Warrior does not provoke attacks of opportunity this turn.",
+          "«Дерзкий натиск» дополнительно даёт +10 ОД передвижения до конца хода. В этот ход Воин не провоцирует атаки по возможности."],
+  "II":  ["Until the end of combat, the Warrior gains +4 MP for each kill and may use their MP after attacking or using abilities.",
+          "До конца боя Воин получает +4 ОП за каждое убийство и может двигаться после атак и способностей."],
+  "III": ["For one round, the Warrior becomes the priority target for every enemy hit by their melee attacks. Also, the Warrior gains +20% parry and +2 deflection until the end of combat.",
+          "На один раунд Воин становится приоритетной целью для всех врагов, которых ударил в ближнем бою. До конца боя +20% к парированию и +2 к отражению."],
+  "IV":  ["This turn, melee attacks deal an additional +(Warrior's STR bonus / 2) damage.",
+          "В этот ход атаки ближнего боя наносят дополнительно +(бонус Силы / 2) урона."]
+ },
+ "Death Waltz": {
+  "I":   ["Upon using Death Waltz, the Bladedancer immediately heals to full. The cost of abilities that cost wounds is reduced by half until the end of combat.",
+          "При использовании «Вальса смерти» Танцор смерти сразу лечится до полного. До конца боя способности, которые стоят здоровья, стоят вдвое дешевле."],
+  "II":  ["Death Waltz also grants the Bladedancer +4 additional charges of Death From Above. Until the end of combat, Death From Above deals +AGI bonus additional damage.",
+          "«Вальс смерти» дополнительно даёт +4 заряда «Смерти свыше». До конца боя «Смерть свыше» наносит +бонус Ловкости урона."],
+  "III": ["Until the end of combat, strikes made by the Bladedancer (including attacks made as a part of Death Waltz) reduce enemy Weapon Skill by −(2 + AGI bonus / 2) and decrease enemy armour and dodge by −(2 + AGI bonus / 2)%. These penalties stack.",
+          "До конца боя каждый удар Танцора смерти (включая удары внутри «Вальса») снижает врагу навык ближнего боя на −(2 + бонус Ловкости / 2), а броню и уклонение на −(2 + бонус Ловкости / 2)%. Штрафы складываются."],
+  "IV":  ["Upon using Death Waltz after killing an enemy, the Bladedancer gains +3% dodge until the end of combat. Stacks up to Agility Bonus times.",
+          "Если «Вальс смерти» использован после убийства врага, Танцор смерти получает +3% к уклонению до конца боя. Складывается до бонуса Ловкости раз."]
+ },
+ "Dismantling Attack": {
+  "I":   ["Until the Operative's next turn, the target cannot move. Until the end of combat, the target's MP are reduced by −3.",
+          "До следующего хода Оперативника цель не может двигаться. До конца боя её ОП снижены на −3."],
+  "II":  ["Dismantling Attack also cripples the enemy, reducing their Weapon Skill and Ballistic Skill by −30 until the end of combat.",
+          "«Препарирование цели» дополнительно калечит врага: −30 к навыкам ближнего и дальнего боя до конца боя."],
+  "III": ["Dismantling Attack also intimidates all enemies in a 5-cell radius around the target, reducing their dodge and armour by −15% until the end of combat.",
+          "«Препарирование цели» дополнительно запугивает всех врагов в радиусе 5 клеток от цели: −15% к уклонению и броне до конца боя."],
+  "IV":  ["The target also provokes an attack of opportunity whenever it attacks.",
+          "Цель дополнительно провоцирует атаку по возможности каждый раз, когда атакует сама."]
+ },
+ "Dispatch": {
+  "I":   ["Until the end of combat, the target of Dispatch loses half of its current armour and deflection.",
+          "До конца боя цель «Устранения» теряет половину текущей брони и отражения."],
+  "II":  ["Dispatch deals additional damage equal to 45% of the target's missing wounds instead of 25% of its missing wounds.",
+          "«Устранение» наносит дополнительный урон в 45% недостающего здоровья цели вместо 25%."],
+  "III": ["Until the end of combat, whenever the Assassin hits an opening, they gain +(lethality / 15) (rounded down) temporary wounds.",
+          "До конца боя каждое попадание в брешь даёт Ассасину +(смертоносность / 15, округляя вниз) временного здоровья."],
+  "IV":  ["If the Dispatch attack kills the target, all enemies in a 3-cell radius around the target gain +2 stacks of the disturbed effect and must pass an Agility resistance test or become staggered for 1 round.",
+          "Если «Устранение» убивает цель, все враги в радиусе 3 клеток получают +2 уровня тревоги и должны пройти проверку Ловкости, иначе на 1 раунд их шатает."]
+ },
+ "Finest Hour": {
+  "I":   ["The target of Finest Hour! gains additional bonuses: during their extra turn, the target deals +(3 × Officer's FEL bonus)% damage. Until the end of combat, the target gains the effect of Voice of Command.",
+          "Цель «Часа пробил!» в дополнительный ход наносит +(3 × бонус Общительности Офицера)% урона и до конца боя находится под «Голосом командира»."],
+  "II":  ["The target of Finest Hour! gains more bonuses: all negative effects are immediately removed from the target. Until the end of the Officer's next turn, the target cannot die (its wounds cannot be reduced below 1).",
+          "С цели «Часа пробил!» сразу снимаются все отрицательные эффекты. До следующего хода Офицера она не может умереть (здоровье не опускается ниже 1)."],
+  "III": ["The target gains +(3 × Officer's FEL bonus) temporary wounds until the end of combat.",
+          "Цель получает +(3 × бонус Общительности Офицера) временного здоровья до конца боя."],
+  "IV":  ["The target of Finest Hour! gains more bonuses: during the extra turn, all their non-attacking abilities cost −1 AP.",
+          "В дополнительный ход все неатакующие способности цели стоят на 1 ОД меньше."]
+ },
+ "Firearm Mastery": {
+  "I":   ["Until the end of the Soldier's turn, they gain +4 MP and their attacks do not spend MP.",
+          "До конца хода Солдат получает +4 ОП, и его атаки не тратят ОП."],
+  "II":  ["Until the end of combat, the Soldier's rate of fire is increased by +30%.",
+          "До конца боя скорострельность Солдата увеличена на +30%."],
+  "III": ["Until the end of combat, all of the Soldier's attacks are 20% harder to dodge. Until the end of combat, the Soldier's ranged attacks gain +10% armour penetration.",
+          "До конца боя от всех атак Солдата на 20% труднее уклониться, а его стрельба получает +10% пробития брони."],
+  "IV":  ["Until the end of the Soldier's turn, each of their area attacks deals additional damage equal to the number of attacked targets.",
+          "До конца хода каждая атака Солдата по площади наносит дополнительный урон, равный числу задетых целей."]
+ },
+ "Orchestrated Firestorm": {
+  "I":   ["The Master Tactician and one random ally make two attacks instead of one during Orchestrated Firestorm and Last Volley.",
+          "Мастер-тактик и один случайный союзник делают в «Направленном шквале» и «Последнем залпе» две атаки вместо одной."],
+  "II":  ["Orchestrated Firestorm and Last Volley can be used multiple times per combat, once per turn.",
+          "«Направленный шквал» и «Последний залп» можно использовать несколько раз за бой — по разу в ход."],
+  "III": ["All allies, including the Master Tactician, that have a weapon capable of burst attacks use a burst attack instead of a single attack against enemies as part of Orchestrated Firestorm and Last Volley. Until the beginning of the Master Tactician's next turn, allies automatically dodge all friendly fire.",
+          "Все союзники с оружием, способным на очередь, стреляют в «Шквале» и «Залпе» очередью вместо одиночного. До следующего хода Мастера-тактика союзники автоматически уклоняются от дружественного огня."],
+  "IV":  ["All allies, including the Master Tactician, that have a weapon capable of area attacks use these area attacks instead of a single attack against enemies as part of Orchestrated Firestorm and Last Volley. All allies within the zone gain +35% armour until the end of the Master Tactician's next turn.",
+          "Все союзники с оружием, способным бить по площади, используют в «Шквале» и «Залпе» атаку по площади вместо одиночной. Союзники в зоне получают +35% брони до следующего хода Мастера-тактика."]
+ },
+ "Overcharge": {
+  "I":   ["Whenever the familiar becomes a target of an enemy's attack, the Overseer has their damage dealt increased by +2%. The effect stacks and lasts until the end of combat.",
+          "Каждый раз, когда враг атакует питомца, урон Надзирателя растёт на +2%. Складывается, действует до конца боя."],
+  "II":  ["Whenever the Overseer uses Overcharge, their familiar gains +30 to its key characteristics for 1 round. The next round, the bonus becomes +10 and lasts until the end of combat.",
+          "При «Перезарядке» питомец получает +30 к ключевым характеристикам на 1 раунд, затем +10 до конца боя."],
+  "III": ["Whenever the Overseer uses their archetype ability, the Overseer and their familiar gain +1 deflection for 1 round. Stacks.",
+          "Каждая способность архетипа даёт Надзирателю и питомцу +1 к отражению на 1 раунд. Складывается."],
+  "IV":  ["Whenever the Overseer uses Reactivate, the momentum value is increased by +5 for each party member still in combat.",
+          "Каждая «Реактивация» добавляет +5 импульса за каждого члена отряда, который ещё в бою."]
+ },
+ "Steady Superiority": {
+  "I":   ["The first time in combat that the Arch-Militant reaches 0 wounds while under the effect of Steady Superiority or Heroic Sacrifice, the Arch-Militant restores 20% of their maximum wounds and loses this effect.",
+          "Первый раз за бой, когда Архмилитант под «Бесспорным превосходством» падает до 0 здоровья, он восстанавливает 20% максимального здоровья, и эффект снимается."],
+  "II":  ["Until the end of combat, every attack grants a stacking +2% bonus to critical hit chance.",
+          "До конца боя каждая атака даёт складывающийся бонус +2% к шансу критического попадания."],
+  "III": ["Until the end of combat, the Arch-Militant's attacks do not spend all MP. Additionally, each attack grants a stacking +5% bonus to dodge for 1 round.",
+          "До конца боя атаки Архмилитанта не сжигают все ОП, а каждая атака даёт складывающиеся +5% к уклонению на 1 раунд."],
+  "IV":  ["The Arch-Militant can use both the heroic act of the Arch-Militant archetype and the heroic act of the Warrior or Soldier archetype in a single combat. You can still only use a heroic act or desperate measures once per round.",
+          "Архмилитант может за один бой использовать и свой героический поступок, и героический поступок Воина или Солдата. По-прежнему не чаще одного за раунд."]
+ },
+ "Take and Hold": {
+  "I":   ["All allies in the selected area also gain +20% to dodge, parry, and armour.",
+          "Все союзники в выбранной зоне дополнительно получают +20% к уклонению, парированию и броне."],
+  "II":  ["All allies in the selected area have their Weapon Skill and Ballistic Skill increased by +20.",
+          "Все союзники в выбранной зоне получают +20 к навыкам ближнего и дальнего боя."],
+  "III": ["All allies in the selected area also gain +20% dodge reduction and armour penetration.",
+          "Все союзники в выбранной зоне дополнительно получают +20% к снижению уклонения и пробитию брони."],
+  "IV":  ["The maximum number of action points granted by Take and Hold is increased to 5.",
+          "Максимум очков действия, которые даёт «Удержать территорию», увеличен до 5."]
+ },
+ "Wild Hunt": {
+  "I":   ["Prior to the attack, all prey suffers a −(3 × PER bonus)% penalty to armour until the end of combat.",
+          "Перед атакой вся добыча получает −(3 × бонус Восприятия)% к броне до конца боя."],
+  "II":  ["The Bounty Hunter gains +Agility Bonus MP and restores +3 charges of Hunt Down the Prey.",
+          "Охотник получает +бонус Ловкости ОП и восстанавливает +3 заряда «Выследить добычу»."],
+  "III": ["Whenever the Bounty Hunter attacks exactly one target, which is marked as prey, with Wild Hunt, this attack deals +300% damage.",
+          "Если «Дикая охота» бьёт ровно по одной цели, помеченной как добыча, атака наносит +300% урона."],
+  "IV":  ["All prey has its MP reduced by −(AGI bonus − 3), but by no less than −2.",
+          "У всей добычи ОП снижены на −(бонус Ловкости − 3), но не меньше чем на −2."]
+ }
+}

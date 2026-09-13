@@ -124,6 +124,7 @@ python3 tools/apply_ru_manual.py                     # то, чего в игр�
 | `sw.js` | service worker: офлайн, network-first для `index.html` и `data.json` |
 | `manifest.webmanifest`, `icon*.png/svg` | PWA-обвязка |
 | `tools/feel.py` | «Как играется»: чем билд отличается от соседей по тому же архетипу — редкие внутри группы оружие, ульта, ключевая и таланты; плюс описание самого архетипа для заголовка группы |
+| `tools/apply_ult_upgrades.py` + `tools/ult_upgrades.json` | улучшения абсолютных способностей: римская цифра у ульты в гайде — номер варианта, который игра предлагает выбрать; здесь тексты всех вариантов с wh40k.wiki и перевод |
 | `tools/patch_notes.py` | слой актуальности: что изменилось в игре после того, как гайд собрали |
 | `tools/ru_manual.json` | ручной перевод: названия и описания билдов, слоты, редкие предметы, советы «как выбрать» |
 | `tools/` | скрипты, которыми собран `data.json` |
@@ -147,6 +148,7 @@ cd ..
 python3 tools/apply_ru.py enGB.json ruRU.json        # русские названия из игры
 python3 tools/apply_ru_desc.py enGB.json ruRU.json   # русские описания и предметы из игры
 python3 tools/apply_ru_manual.py                     # ручной слой: билды, слоты, «как выбрать»
+python3 tools/apply_ult_upgrades.py                  # какой вариант улучшения ульты брать
 python3 tools/feel.py                                # «как играется» для каждого билда
 python3 tools/patch_notes.py                         # пометки о патчах после гайда
 ```

@@ -572,9 +572,10 @@ function paneNow(root, c, b) {
 function pickCard(opts) {
   const main = opts[0];
   const n = el("button", "pick t-" + main.t);
-  const k = KIND[main.t] || KIND.other;
+  const k = kindOf(main);
   n.innerHTML = `<div class="kind">${esc(k[0])}${k[1] ? " · " + k[1] : ""}</div>
     <div class="name">${nameHtml(main)}</div>
+    ${main.udr ? `<div class="note">В окне выбора улучшения — вариант ${esc(main.r)}: ${esc(main.udr)}</div>` : ""}
     ${main.note ? `<div class="note">${esc(main.note)}</div>` : ""}
     ${opts.length > 1 ? `<div class="alts"><div class="lbl">или равноценно</div>${
       opts.slice(1).map(o => `<div class="name" style="font-size:16px">${nameHtml(o)}</div>`).join("")
@@ -582,16 +583,22 @@ function pickCard(opts) {
   n.onclick = () => sheetFor(opts);
   return n;
 }
+// у ульты римская цифра — номер варианта улучшения, который выбирают на этом уровне
+const isUp = o => o.t === "ult" && o.r;
+const kindOf = o => isUp(o) ? ["Улучшение абсолютной способности", ""] : (KIND[o.t] || KIND.other);
 function nameHtml(o) {
   const ru = o.ru ? `<span class="ru">${esc(o.ru)}</span> ` : "";
-  const rank = o.r ? ` <span class="rank">${esc(o.r)}</span>` : "";
+  const rank = o.r ? ` <span class="rank">${isUp(o) ? "улучшение " : ""}${esc(o.r)}</span>` : "";
   return `${ru}<span class="${o.ru ? "en" : "ru"}">${esc(o.n)}</span>${rank}`;
 }
 function sheetFor(opts) {
   openSheet(opts.map(o => {
-    const k = KIND[o.t] || KIND.other;
+    const k = kindOf(o);
     return `<h3>${o.ru ? esc(o.ru) + " " : ""}<span class="muted" style="font-size:16px">${esc(o.n)}${o.r ? " " + esc(o.r) : ""}</span></h3>
       <div class="small" style="color:var(--gold-dim);letter-spacing:.1em;text-transform:uppercase">${esc(k[0])}</div>
+      ${o.udr ? `<p class="small" style="color:var(--ink)"><b>Вариант ${esc(o.r)}.</b> ${esc(o.udr)}</p>
+      <p class="small en">${esc(o.ud)}</p>
+      <div class="small muted">Игра предложит четыре варианта улучшения — бери этот. Ниже — сама способность.</div>` : ""}
       ${o.dr ? `<p class="small" style="color:var(--ink)">${esc(o.dr)}</p>` : ""}
       <p class="small ${o.dr ? "en" : ""}" style="${o.dr ? "" : "color:var(--ink)"}">${
         o.d ? esc(o.d) : (o.dr ? "" : '<span class="muted">Описание недоступно — сверься с игрой.</span>')}</p>`;
